@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* macOS Glassmorphism */
+.macos-window {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(20px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+	border-radius: 10px;
+}
+
+.macos-window-dark {
+	background: rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* macOS Scrollbar */
+.macos-scrollbar::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+.macos-scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.macos-scrollbar::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+}
+
+.macos-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* macOS Dock */
+.macos-dock {
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(20px) saturate(180%);
+	border-radius: 32px;
+	padding: 12px 20px;
+	box-shadow: 
+		inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+		inset 0 2px 4px rgba(0, 0, 0, 0.1);
+	border: 1.5px solid rgba(255, 255, 255, 0.4);
+	display: inline-flex;
+	width: auto;
+	min-width: fit-content;
+}
+
+/* macOS Menu Bar */
+.macos-menubar {
+	background: transparent;
+	backdrop-filter: blur(0);
+	border-bottom: none;
+}
+
+/* Window Controls */
+.window-control {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.window-control-close {
+	background: #ff5f57;
+}
+
+.window-control-close:hover {
+	background: #ff3b30;
+}
+
+.window-control-minimize {
+	background: #ffbd2e;
+}
+
+.window-control-minimize:hover {
+	background: #ff9500;
+}
+
+.window-control-maximize {
+	background: #28c840;
+}
+
+.window-control-maximize:hover {
+	background: #34c759;
+}
+

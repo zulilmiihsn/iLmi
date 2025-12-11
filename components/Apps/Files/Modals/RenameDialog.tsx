@@ -1,0 +1,62 @@
+'use client';
+
+interface RenameDialogProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onRename: () => void;
+    value: string;
+    onValueChange: (val: string) => void;
+    darkMode: boolean;
+}
+
+export default function RenameDialog({
+    isOpen,
+    onClose,
+    onRename,
+    value,
+    onValueChange,
+    darkMode,
+}: RenameDialogProps) {
+    if (!isOpen) return null;
+
+    const theme = {
+        modalBg: darkMode ? 'bg-[#1C1C1E]/80' : 'bg-[#F9F9F9]/80',
+        text: darkMode ? 'text-white' : 'text-black',
+        modalInputBg: darkMode ? 'bg-[#2C2C2E]' : 'bg-white',
+    };
+
+    return (
+        <div className="absolute inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 animate-fade-in">
+            <div
+                className={`${theme.modalBg} backdrop-blur-md rounded-2xl w-72 p-0 shadow-2xl animate-scale-in transition-colors`}
+            >
+                <div className="p-4 text-center">
+                    <h3 className={`text-lg font-semibold mb-1 ${theme.text}`}>Rename</h3>
+                    <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => onValueChange(e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border-none outline-none text-center mt-2 ${theme.modalInputBg}`}
+                        autoFocus
+                    />
+                </div>
+                <div className={`flex border-t ${darkMode ? 'border-gray-700' : 'border-gray-300/50'}`}>
+                    <button
+                        onClick={onClose}
+                        className="flex-1 py-3 text-blue-500 font-medium active:bg-gray-100/10 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <div className={`w-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                    <button
+                        onClick={onRename}
+                        disabled={!value.trim()}
+                        className="flex-1 py-3 text-blue-500 font-semibold active:bg-blue-500/10 disabled:text-gray-400 transition-colors"
+                    >
+                        Rename
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

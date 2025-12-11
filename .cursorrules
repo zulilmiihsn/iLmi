@@ -1,0 +1,632 @@
+# iLmi Project - Context Documentation for AI Assistants
+
+## 🎯 PRIMARY GOAL: Smooth Native macOS/iOS Experience
+
+**CRITICAL OBJECTIVE:** 
+- Menciptakan web app yang **smooth, lancar, dan memberikan experience seperti sedang menggunakan macOS** ketika dibuka di laptop/desktop
+- Menciptakan web app yang **smooth, lancar, dan memberikan experience seperti sedang menggunakan iOS** ketika dibuka di tablet dan mobile
+- **Performance harus smooth seperti sistem operasi native macOS/iOS**
+- **Tidak ada lag, stuttering, atau jank dalam interaksi apapun**
+
+## Project Overview
+
+**iLmi** adalah simulator macOS/iOS yang dibangun dengan Next.js 15 dan React 18. Project ini menampilkan desktop environment macOS dan home screen iOS dengan berbagai aplikasi yang dapat dijalankan.
+
+**Target Experience:**
+- **Desktop/Laptop**: Experience seperti menggunakan macOS - smooth animations, responsive windows, native-feeling interactions
+- **Tablet/Mobile**: Experience seperti menggunakan iOS - smooth gestures, fluid animations, native-feeling touch interactions
+
+## 🚀 Performance Requirements (CRITICAL)
+
+### Smoothness Standards
+- **Frame Rate**: Minimum 60 FPS (60fps) untuk semua animations dan interactions
+- **Animation Smoothness**: All animations harus smooth tanpa jank atau stuttering
+- **Response Time**: 
+  - Mouse/Touch response: < 16ms (1 frame @ 60fps)
+  - Window drag/resize: Smooth 60fps
+  - App launch: < 100ms initial response
+  - Swipe gestures: Smooth and responsive
+  
+### Performance Metrics
+- **Lighthouse Performance Score**: Target 90+
+- **First Contentful Paint (FCP)**: < 1.8s
+- **Largest Contentful Paint (LCP)**: < 2.5s
+- **Cumulative Layout Shift (CLS)**: < 0.1
+- **Total Blocking Time (TBT)**: < 200ms
+
+### User Experience Standards
+- **macOS Desktop**: Windows drag harus smooth seperti native macOS
+- **iOS Mobile**: Swipe gestures harus smooth seperti native iOS
+- **No visible lag**: Semua interaksi harus instant dan smooth
+- **Smooth transitions**: Semua page transitions harus fluid
+- **Responsive feedback**: Visual feedback harus immediate
+
+## Tech Stack
+
+- **Framework**: Next.js 15.5.6 (App Router)
+- **UI Library**: React 18.3.1
+- **State Management**: Zustand 5.0.8
+- **Styling**: Tailwind CSS 4.1.17
+- **Icons**: Font Awesome 6.7.2 (@fortawesome/fontawesome-free)
+- **Language**: TypeScript 5.9.3 (strict mode)
+- **Package Manager**: pnpm
+
+## Architecture for Smooth Performance
+
+### 1. **RequestAnimationFrame (RAF) Pattern**
+**MUST USE** for all animations and drag/resize operations:
+```typescript
+// ✅ CORRECT - Use RAF for smooth animations
+const rafRef = useRef<number | null>(null);
+const handleAnimation = () => {
+  if (!rafRef.current) {
+    rafRef.current = requestAnimationFrame(() => {
+      // Update UI
+      rafRef.current = null;
+    });
+  }
+};
+
+// ❌ WRONG - Direct state updates in event handlers
+const handleDrag = (e) => {
+  setPosition(e.clientX); // Causes jank
+};
+```
+
+**Implementation Requirements:**
+- ✅ Window dragging MUST use RAF
+- ✅ Window resizing MUST use RAF
+- ✅ Any position/transform updates MUST use RAF
+- ✅ Batch updates in RAF callback
+- ✅ Cancel RAF on cleanup
+
+### 2. **State Management Optimization**
+**MUST FOLLOW** Zustand best practices:
+```typescript
+// ✅ CORRECT - Specific selectors
+const windows = useWindowsStore((state) => state.windows);
+
+// ❌ WRONG - Entire state
+const store = useWindowsStore(); // Causes unnecessary re-renders
+```
+
+**Requirements:**
+- ✅ Use specific selectors (not entire state)
+- ✅ Zustand 5 handles shallow comparison automatically
+- ✅ Minimize store updates during animations
+- ✅ Use refs for frequently updated values during drag/resize
+
+### 3. **React Optimization Patterns**
+**MUST USE** for performance:
+```typescript
+// ✅ CORRECT - Memoization for expensive computations
+const Component = useMemo(() => {
+  return getAppComponent(app.component);
+}, [app?.component]);
+
+// ✅ CORRECT - React.memo for pure components
+export default memo(Component);
+
+// ✅ CORRECT - useCallback for event handlers
+const handleClick = useCallback(() => {
+  // handler logic
+}, [dependencies]);
+```
+
+**Requirements:**
+- ✅ React.memo for frequently rendered components (Dock, AppIcon, Desktop, HomeScreen)
+- ✅ useMemo for expensive computations
+- ✅ useCallback for event handlers in dependencies
+- ✅ Avoid inline functions in JSX when possible
+
+### 4. **Code Splitting & Dynamic Imports**
+**MUST USE** for optimal loading:
+```typescript
+// ✅ CORRECT - Dynamic imports
+const Component = dynamic(() => import('./Component'), {
+  loading: () => <LoadingComponent />,
+});
+
+// ❌ WRONG - Static imports for large components
+import Component from './Component';
+```
+
+**Requirements:**
+- ✅ All app components MUST use dynamic imports
+- ✅ Loading states for better UX
+- ✅ Reduce initial bundle size
+
+### 5. **Debouncing & Throttling**
+**MUST USE** for performance:
+```typescript
+// ✅ CORRECT - Debounce resize handlers
+const debouncedResize = useMemo(
+  () => debounce(() => handleResize(), RESIZE.DEBOUNCE_DELAY),
+  []
+);
+```
+
+**Requirements:**
+- ✅ Debounce resize handlers (150ms)
+- ✅ Throttle scroll handlers if needed
+- ✅ Never call expensive operations directly in event handlers
+
+## Project Structure
+
+```
+.
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout dengan metadata
+│   ├── page.tsx           # Home page (device detection & routing)
+│   └── globals.css        # Global Tailwind styles
+├── components/
+│   ├── Desktop/           # macOS Desktop components
+│   │   ├── Desktop.tsx    # Main desktop container
+│   │   ├── MenuBar.tsx    # Top menu bar
+│   │   ├── Dock.tsx       # Bottom dock
+│   │   ├── Window.tsx     # Draggable/resizable windows
+│   │   └── ControlCenter.tsx
+│   ├── Mobile/            # iOS Mobile components
+│   │   ├── HomeScreen.tsx # Main home screen
+│   │   ├── StatusBar.tsx  # Top status bar
+│   │   ├── AppIcon.tsx    # App icon component
+│   │   └── Widget.tsx     # iOS widgets
+│   ├── Apps/              # Application components
+│   │   ├── Calculator.tsx
+│   │   ├── Notes.tsx
+│   │   ├── Finder.tsx     # macOS only
+│   │   ├── Files.tsx      # iOS only
+│   │   ├── Terminal.tsx   # macOS only
+│   │   ├── Settings.tsx
+│   │   └── Photos.tsx     # iOS only
+│   └── ErrorBoundary.tsx  # Error handling component
+├── stores/                # Zustand state management
+│   ├── apps.ts            # App registry & running apps
+│   ├── windows.ts         # Window state management
+│   └── controlCenter.ts   # Control Center state
+├── utils/                 # Utility functions
+│   ├── deviceDetection.ts # Device/platform detection
+│   ├── deviceInfo.ts      # Battery/network info
+│   ├── appComponents.tsx  # Dynamic component mapping
+│   └── debounce.ts        # Debounce utility
+├── types/                 # TypeScript type definitions
+│   ├── index.ts           # Main types
+│   └── navigator.ts       # Navigator API types
+└── constants/             # Application constants
+    └── index.ts           # Window sizes, delays, etc.
+```
+
+## 🎨 macOS Experience Requirements (Desktop/Laptop)
+
+### Window System
+- **Smooth Dragging**: Windows harus dapat di-drag dengan smooth 60fps
+- **Smooth Resizing**: Resize windows harus smooth tanpa lag
+- **Instant Feedback**: Visual feedback saat drag/resize harus instant
+- **Native Feel**: Interaksi harus terasa seperti native macOS windows
+- **Z-index Management**: Focused window selalu di atas dengan smooth transition
+
+### Animations
+- **Window Open/Close**: Smooth fade/scale animation
+- **Minimize/Maximize**: Smooth transition seperti macOS
+- **Dock Animations**: Smooth hover effects dan scaling
+- **Menu Bar**: Smooth interactions dan transitions
+
+### Performance Standards
+- **Window Drag**: 60fps, no jank, smooth movement
+- **Multiple Windows**: Tetap smooth meskipun banyak windows terbuka
+- **Resize Performance**: Smooth meskipun window besar
+
+## 📱 iOS Experience Requirements (Tablet/Mobile)
+
+### Gestures & Touch
+- **Smooth Swipes**: Swipe gestures harus smooth seperti iOS native
+- **Touch Response**: Touch response time < 16ms
+- **Gesture Recognition**: Accurate gesture detection
+- **Swipe to Close**: Smooth swipe down to close app
+- **Pull to Refresh**: Smooth pull gesture (if implemented)
+
+### Animations
+- **App Launch**: Smooth full-screen transition
+- **Home Screen**: Smooth app icon animations
+- **Page Transitions**: Smooth page transitions
+- **Status Bar**: Smooth updates dan animations
+
+### Performance Standards
+- **Scroll Performance**: Smooth 60fps scrolling
+- **Touch Interactions**: Instant response
+- **Animation Smoothness**: All animations must be smooth
+
+## Key Architecture Patterns
+
+### 1. State Management (Zustand)
+- **apps.ts**: Manages app registry and running apps
+  - `iosApps`, `macosApps`: Pre-computed platform-specific apps
+  - `runningApps`: Set of currently running app IDs
+- **windows.ts**: Manages window state (position, size, focus, z-index)
+  - Zustand 5 automatically does shallow comparison (no need for `shallow` parameter)
+  - **IMPORTANT**: Minimize store updates during drag/resize - use refs instead
+- **controlCenter.ts**: Simple toggle state for Control Center
+
+### 2. Component Architecture
+- **Desktop Mode**: MenuBar + Windows + Dock
+- **Mobile Mode**: StatusBar + HomeScreen + Dock (bottom apps)
+- **Apps**: Dynamic imports for code splitting (`utils/appComponents.tsx`)
+- **Error Boundaries**: Wrapped around Desktop & HomeScreen
+
+### 3. Device Detection
+- Auto-detects platform (macOS/iOS) based on screen size and touch capability
+- Routes to appropriate UI (Desktop.tsx or HomeScreen.tsx)
+- **Debounced resize handler (150ms)** to prevent excessive re-renders
+- **CRITICAL**: Device detection must not cause lag or delay
+
+### 4. Window System (macOS) - Performance Critical
+**MUST IMPLEMENT:**
+- ✅ Draggable windows with **RequestAnimationFrame**
+- ✅ Resizable windows with **RequestAnimationFrame**
+- ✅ **Batched updates** - collect all updates, apply in single RAF
+- ✅ **Ref-based state** - use refs for drag/resize state, only update store on mouseup
+- ✅ **Z-index management** - smooth transitions
+- ✅ **Minimize/Maximize/Close** - smooth animations
+
+**Performance Pattern:**
+```typescript
+// ✅ CORRECT Pattern for Window Dragging
+const stateRef = useRef({ /* drag state */ });
+const rafRef = useRef<number | null>(null);
+const pendingUpdateRef = useRef({ /* updates */ });
+
+const handleMouseMove = useCallback((e: MouseEvent) => {
+  // Update refs (no re-render)
+  stateRef.current.x = e.clientX;
+  
+  // Batch updates
+  pendingUpdateRef.current.x = calculatedX;
+  
+  // Schedule RAF update
+  if (!rafRef.current) {
+    rafRef.current = requestAnimationFrame(() => {
+      // Single store update (causes 1 re-render)
+      storeRef.current.updateWindow(id, pendingUpdateRef.current);
+      pendingUpdateRef.current = null;
+      rafRef.current = null;
+    });
+  }
+}, []);
+```
+
+### 5. App System
+- Apps defined in `stores/apps.ts` with metadata (id, name, icon, component, platform)
+- Component mapping centralized in `utils/appComponents.tsx`
+- **Dynamic imports** with loading states (for code splitting)
+- Platform-specific filtering (ios, macos, both)
+
+## 🛠️ Implementation Guidelines for Smooth Performance
+
+### Creating Smooth Animations
+
+**1. Use CSS Transitions Instead of JavaScript Animations**
+```typescript
+// ✅ CORRECT - CSS transitions
+<div className="transition-all duration-200 ease-out" />
+
+// ❌ AVOID - JavaScript-based frame-by-frame animations
+useEffect(() => {
+  const interval = setInterval(() => {
+    setPosition(prev => prev + 1); // Causes re-renders every frame
+  }, 16);
+}, []);
+```
+
+**2. Use Transform & Opacity for Animations**
+```css
+/* ✅ CORRECT - GPU-accelerated properties */
+transform: translateX(100px);
+opacity: 0.5;
+
+/* ❌ AVOID - Layout-triggering properties */
+left: 100px;
+width: 200px;
+```
+
+**3. Use will-change for Known Animations**
+```css
+/* ✅ CORRECT - Hint browser for optimization */
+will-change: transform;
+
+/* Apply before animation, remove after */
+```
+
+### Optimizing Window Drag/Resize
+
+**MUST FOLLOW THIS PATTERN:**
+```typescript
+// 1. Use refs for frequently updated values
+const stateRef = useRef({
+  isDragging: false,
+  dragStart: { x: 0, y: 0 },
+  windowId: '',
+});
+
+// 2. Update refs in event handlers (no re-render)
+const handleMouseMove = (e: MouseEvent) => {
+  stateRef.current.x = e.clientX;
+  stateRef.current.y = e.clientY;
+};
+
+// 3. Batch updates with RAF
+const rafRef = useRef<number | null>(null);
+const pendingUpdate = useRef({});
+
+if (!rafRef.current) {
+  rafRef.current = requestAnimationFrame(() => {
+    // Single store update
+    updateWindow(stateRef.current.windowId, pendingUpdate.current);
+    rafRef.current = null;
+  });
+}
+
+// 4. Only update store on mouseup (final position)
+const handleMouseUp = () => {
+  if (rafRef.current) cancelAnimationFrame(rafRef.current);
+  // Final update
+  updateWindow(stateRef.current.windowId, pendingUpdate.current);
+};
+```
+
+### Optimizing Touch Gestures (iOS)
+
+**Smooth Swipe Pattern:**
+```typescript
+// ✅ CORRECT - Smooth touch handling
+const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+
+const handleTouchMove = (e: TouchEvent) => {
+  // Use passive listeners for better performance
+  const deltaX = e.touches[0].clientX - touchStart.x;
+  const deltaY = e.touches[0].clientY - touchStart.y;
+  
+  // Apply transform directly (no state update during drag)
+  element.style.transform = `translateY(${deltaY}px)`;
+};
+
+// Update state only on touch end
+const handleTouchEnd = () => {
+  // Calculate final position
+  // Apply smooth transition
+};
+```
+
+## Coding Standards
+
+### TypeScript
+- **Strict mode enabled**: No implicit any
+- **Type definitions**: All types in `types/` directory
+- **No `any` types**: Use proper types or type assertions with interfaces
+- **Type exports**: Centralized in `types/index.ts`
+
+### React Patterns
+- **'use client'**: All interactive components are client components
+- **useMemo/useCallback**: MUST use for expensive computations and event handlers
+- **React.memo**: MUST apply to frequently re-rendered components (Dock, AppIcon, Desktop, HomeScreen)
+- **Custom hooks**: When logic is reusable
+- **Error boundaries**: For graceful error handling
+
+### Performance Patterns (MANDATORY)
+- ✅ **RequestAnimationFrame** for all position/transform updates
+- ✅ **Refs** for frequently updated values during drag/resize
+- ✅ **Batched updates** - collect updates, apply in single RAF
+- ✅ **Debounce** resize handlers (150ms)
+- ✅ **Dynamic imports** for code splitting
+- ✅ **CSS transitions** instead of JS animations when possible
+- ✅ **Transform/opacity** instead of layout properties
+- ❌ **NEVER** update state directly in mousemove/touchmove handlers
+- ❌ **NEVER** cause layout thrashing
+- ❌ **NEVER** block main thread with expensive operations
+
+### State Management
+- **Zustand stores**: Single responsibility per store
+- **Selectors**: Use specific selectors, not entire state
+- **No shallow parameter**: Zustand 5 handles this automatically
+- **Immutable updates**: Always return new state objects
+- **Minimize updates**: During drag/resize, minimize store updates
+
+### Naming Conventions
+- **Components**: PascalCase (e.g., `Window.tsx`, `HomeScreen.tsx`)
+- **Utilities**: camelCase (e.g., `deviceDetection.ts`, `debounce.ts`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `WINDOW.MIN_WIDTH`)
+- **Types/Interfaces**: PascalCase (e.g., `WindowState`, `DeviceInfo`)
+
+### File Organization
+- **One component per file**: Named exports default export
+- **Co-located types**: Types near components when component-specific
+- **Shared types**: In `types/` directory
+- **Constants**: Centralized in `constants/index.ts`
+
+## Important Constants
+
+```typescript
+// Window sizes
+WINDOW.MIN_WIDTH = 400
+WINDOW.MIN_HEIGHT = 300
+WINDOW.DEFAULT_WIDTH = 800
+WINDOW.DEFAULT_HEIGHT = 600
+WINDOW.Z_INDEX_START = 1000
+
+// Performance & Delays
+RESIZE.DEBOUNCE_DELAY = 150ms  // Resize handler debounce
+RESIZE.MIN_SWIPE_DISTANCE = 50px  // Minimum swipe distance
+
+// Dock
+DOCK.IOS_APPS_COUNT = 4  // Last N apps in iOS dock
+
+// Animation durations
+ANIMATION.DURATION.FAST = 100ms
+ANIMATION.DURATION.NORMAL = 200ms
+ANIMATION.DURATION.SLOW = 300ms
+```
+
+## Best Practices for Smooth Performance
+
+### Performance (MANDATORY)
+- ✅ **RequestAnimationFrame** for all animations and drag/resize
+- ✅ **Dynamic imports** for code splitting (reduce initial bundle)
+- ✅ **Debounce** resize handlers (150ms)
+- ✅ **React.memo** for pure components
+- ✅ **useMemo** for expensive computations
+- ✅ **useCallback** for event handlers in dependencies
+- ✅ **Refs** for frequently updated values during animations
+- ✅ **Batched updates** - collect updates, apply in single operation
+- ✅ **CSS transitions** instead of JS animations when possible
+- ✅ **Transform/opacity** for animations (GPU-accelerated)
+- ✅ **will-change** for known animations
+- ✅ **Passive event listeners** for touch/scroll events
+
+### Code Quality
+- ✅ ESLint configured (Next.js + TypeScript rules)
+- ✅ Prettier configured (auto-format on save)
+- ✅ No unused variables (prefix with `_` if intentionally unused)
+- ✅ All dependencies in hooks listed
+- ✅ Type safety enforced
+
+### Image Optimization
+- ✅ Use Next.js `Image` component (not `<img>`)
+- ✅ Use `unoptimized` prop for external images (Unsplash)
+- ✅ Proper width/height attributes
+- ✅ Lazy loading for images below fold
+
+### Error Handling
+- ✅ Error boundaries for Desktop & Mobile modes
+- ✅ Graceful fallbacks for API failures (battery, network)
+- ✅ Try-catch for async operations
+
+## Common Patterns
+
+### Adding New App
+1. Add app metadata to `stores/apps.ts` (defaultApps array)
+2. Create component in `components/Apps/`
+3. Add component mapping in `utils/appComponents.tsx`
+4. Export component type in `types/index.ts` (AppComponentName)
+
+### Window Operations (Performance Critical)
+```typescript
+// ✅ CORRECT Pattern for Window Operations
+// 1. Use refs during drag/resize
+const stateRef = useRef({ /* state */ });
+
+// 2. Batch updates with RAF
+const rafRef = useRef<number | null>(null);
+const pendingUpdate = useRef({});
+
+const handleMouseMove = useCallback((e: MouseEvent) => {
+  // Update refs (no re-render)
+  const updates = calculateUpdates(e);
+  Object.assign(pendingUpdate.current, updates);
+  
+  // Schedule RAF
+  if (!rafRef.current) {
+    rafRef.current = requestAnimationFrame(() => {
+      updateWindow(id, pendingUpdate.current);
+      pendingUpdate.current = {};
+      rafRef.current = null;
+    });
+  }
+}, []);
+
+// 3. Final update on mouseup
+const handleMouseUp = useCallback(() => {
+  if (rafRef.current) cancelAnimationFrame(rafRef.current);
+  updateWindow(id, pendingUpdate.current);
+}, []);
+```
+
+### Device Detection
+```typescript
+const deviceInfo = detectDevice();
+// Returns: { platform, isMobile, isTablet, isDesktop, screenWidth, screenHeight, hasTouch }
+```
+
+## Build & Development
+
+### Scripts
+- `pnpm dev` - Development server
+- `pnpm build` - Production build
+- `pnpm start` - Production server
+- `pnpm lint` - ESLint check
+- `pnpm lint:fix` - Fix ESLint errors
+- `pnpm format` - Format with Prettier
+
+### Build Output
+- Static pages prerendered
+- Code splitting with dynamic imports
+- Optimized bundle sizes
+
+## ⚠️ Critical Rules for Smooth Performance
+
+### DO'S (MUST FOLLOW)
+1. ✅ **ALWAYS use RequestAnimationFrame** for position/transform updates
+2. ✅ **ALWAYS use refs** for values updated frequently during drag/resize
+3. ✅ **ALWAYS batch updates** - collect all updates, apply in single RAF
+4. ✅ **ALWAYS debounce** resize handlers (150ms)
+5. ✅ **ALWAYS use React.memo** for frequently rendered components
+6. ✅ **ALWAYS use CSS transitions** instead of JS animations when possible
+7. ✅ **ALWAYS use transform/opacity** for animations
+8. ✅ **ALWAYS test** performance - ensure 60fps
+9. ✅ **ALWAYS minimize** store updates during animations
+10. ✅ **ALWAYS use** dynamic imports for large components
+
+### DON'TS (NEVER DO)
+1. ❌ **NEVER update state** directly in mousemove/touchmove handlers
+2. ❌ **NEVER cause** layout thrashing
+3. ❌ **NEVER block** main thread with expensive operations
+4. ❌ **NEVER use** setInterval for animations (use RAF)
+5. ❌ **NEVER import** large components statically (use dynamic imports)
+6. ❌ **NEVER skip** memoization for expensive computations
+7. ❌ **NEVER use** layout properties (left, top, width) for animations
+8. ❌ **NEVER update** store on every frame during drag/resize
+9. ❌ **NEVER cause** unnecessary re-renders
+10. ❌ **NEVER ignore** performance warnings
+
+## Important Notes
+
+1. **Variable Naming**: Avoid naming variables `window` (conflicts with global `window` object). Use `windowState` instead.
+
+2. **Shallow Comparison**: Zustand 5 handles shallow comparison automatically. Don't pass `shallow` as second parameter.
+
+3. **Dynamic Imports**: All app components use dynamic imports. Don't import them statically.
+
+4. **Type Safety**: Always use proper types. Don't use `any` - create proper type definitions.
+
+5. **Constants**: Use constants from `constants/index.ts` instead of magic numbers.
+
+6. **Platform Detection**: Check `deviceInfo.platform === 'macos'` to route to appropriate UI.
+
+7. **Error Boundaries**: Always wrap major components (Desktop, HomeScreen) with ErrorBoundary.
+
+8. **Performance First**: Every feature must be implemented with performance in mind. Smooth 60fps is non-negotiable.
+
+9. **Test Performance**: Always test performance after implementing features. Use browser DevTools Performance tab.
+
+10. **Native Feel**: All interactions should feel native - instant response, smooth animations, no jank.
+
+## When Adding Features
+
+1. **Check existing patterns**: Follow existing code structure
+2. **Update types**: Add types to `types/` if needed
+3. **Update constants**: Add to `constants/index.ts` if needed
+4. **Test build**: Run `pnpm build` to ensure no errors
+5. **Test performance**: Ensure 60fps smooth animations
+6. **Follow conventions**: Use existing naming and structure patterns
+7. **Use RAF**: For any position/transform updates
+8. **Minimize re-renders**: Use refs and memoization appropriately
+
+## Performance Testing Checklist
+
+Before considering a feature complete:
+- [ ] Test window drag performance (must be 60fps)
+- [ ] Test window resize performance (must be 60fps)
+- [ ] Test touch gestures on mobile (must be smooth)
+- [ ] Test with multiple windows open (must remain smooth)
+- [ ] Check Lighthouse Performance score (target 90+)
+- [ ] Verify no layout thrashing
+- [ ] Verify no main thread blocking
+- [ ] Test on different devices/browsers
