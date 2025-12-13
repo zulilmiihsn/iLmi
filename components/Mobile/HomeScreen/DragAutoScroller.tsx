@@ -10,9 +10,13 @@ export function DragAutoScroller({ onChangePage }: { onChangePage: (dir: 'next' 
     const checkZone = (rect: { left: number; width: number } | null) => {
         if (!rect) return 'none';
         const windowWidth = window.innerWidth;
-        const threshold = 60; // Fixed pixels (safer than %) or max 15%
-        const leftEdge = Math.max(threshold, windowWidth * 0.1);
-        const rightEdge = windowWidth - leftEdge;
+
+        // Prev: 60px -> 25px. Still triggered when inserting in last column.
+        // New: 15px fixed. User must essentially push the bezel.
+        const EDGE_ZONE_WIDTH = 15;
+
+        const leftEdge = EDGE_ZONE_WIDTH;
+        const rightEdge = windowWidth - EDGE_ZONE_WIDTH;
 
         const centerX = rect.left + rect.width / 2;
 
@@ -52,7 +56,7 @@ export function DragAutoScroller({ onChangePage }: { onChangePage: (dir: 'next' 
                         // Actually if they stay holding, onDragMove might not fire if they don't move 1px.
                         // But if page slides, the sensor might update?
                         // Let's keep it simple: One jump per entry.
-                    }, 400); // 400ms dwell (snappier)
+                    }, 650); // 650ms dwell (slower to prevent accidental triggers)
                 }
             }
         },

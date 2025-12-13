@@ -1,10 +1,10 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AppIcon from '../AppIcon';
-import type { AppMetadata } from '../../types';
+import type { AppMetadata } from '../../../types';
 
 interface SortableAppIconProps {
     app: AppMetadata;
@@ -12,9 +12,11 @@ interface SortableAppIconProps {
     onClick: (appId: string) => void;
     disabled?: boolean;
     isEmpty?: boolean;
+    isDock?: boolean;
+    className?: string;
 }
 
-function SortableAppIcon({ app, id, onClick, disabled, isEmpty }: SortableAppIconProps) {
+function SortableAppIcon({ app, id, onClick, disabled, isEmpty, isDock, className }: SortableAppIconProps) {
     const {
         attributes,
         listeners,
@@ -24,12 +26,18 @@ function SortableAppIcon({ app, id, onClick, disabled, isEmpty }: SortableAppIco
         isDragging,
     } = useSortable({ id, disabled });
 
-    const style = {
+    // Memoize click handler to prevent unnecessary re-renders
+    const handleClick = useCallback(() => {
+        if (!isDragging) onClick(app.id);
+    }, [isDragging, onClick, app.id]);
+
+    const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0 : 1, // Hide original item while dragging (ghost takes over)
+        transition: transition || 'transform 150ms ease', // Faster transition
+        opacity: isDragging ? 0 : 1,
         zIndex: isDragging ? 0 : 'auto',
-        touchAction: 'pan-x', // Allow horizontal scroll (page swipe)
+        touchAction: 'pan-x',
+        willChange: transform ? 'transform' : 'auto',
     };
 
     return (
@@ -37,20 +45,33 @@ function SortableAppIcon({ app, id, onClick, disabled, isEmpty }: SortableAppIco
             ref={setNodeRef}
             style={style}
             {...attributes}
-            // We attach listeners to the div wrapper if NOT empty/disabled (though disabled hook handles logic, preventing events on empty slots is safer UX)
             {...(isEmpty ? {} : listeners)}
-            className={`w-full h-full relative ${isEmpty ? '' : 'cursor-grab'}`}
+            className={`relative ${isEmpty ? '' : 'cursor-grab'} ${className || 'w-full h-full'}`}
         >
             {!isEmpty && (
                 <AppIcon
                     app={app}
-                    onClick={() => {
-                        if (!isDragging) onClick(app.id);
-                    }}
+                    isDock={isDock}
+                    onClick={handleClick}
                 />
             )}
         </div>
     );
 }
 
-export default memo(SortableAppIcon);
+// Custom comparison - only re-render if important props change
+export default memo(SortableAppIcon, (prevProps, nextProps) => {
+    // For empty slots, only check id
+    if (prevProps.isEmpty && nextProps.isEmpty) {
+        return prevProps.id === nextProps.id;
+    }
+
+    // For app icons, check id, app.id, isEmpty, isDock
+    return (
+        prevProps.id === nextProps.id &&
+        prevProps.app.id === nextProps.app.id &&
+        prevProps.isEmpty === nextProps.isEmpty &&
+        prevProps.isDock === nextProps.isDock &&
+        prevProps.disabled === nextProps.disabled
+    );
+});

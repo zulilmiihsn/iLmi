@@ -39,6 +39,7 @@ import HomeScreenDock from './HomeScreenDock';
 import HomeScreenPagination from './HomeScreenPagination';
 import HomeScreenAppContainer from './HomeScreenAppContainer';
 import { DragAutoScroller } from './DragAutoScroller';
+import { useDragHandlers } from './useDragHandlers';
 
 // Helper to generate empty slot IDs
 const getEmptySlotId = (page: number, index: number) => `empty-${page}-${index}`;
@@ -65,34 +66,61 @@ function HomeScreen() {
 		[allApps]
 	);
 
+	// O(1) lookup map for render functions only (doesn't affect state sync)
+	const appsMap = useMemo(() => new Map(apps.map(app => [app.id, app])), [apps]);
+
 	// --- DND State ---
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const isDragging = activeId !== null;
 
-	const generatePageItems = useCallback((pageIndex: number, currentPositions: Map<string, number>, currentApps: typeof apps) => {
+	// Helper to generate page items (pure function, no hooks)
+	const computePageItems = (pageIndex: number, positions: Map<string, number>, appsList: typeof apps) => {
 		const items: string[] = [];
-		const offset = pageIndex * 20;
-		for (let i = 0; i < 20; i++) {
+		const PAGE_SIZE = pageIndex === 0 ? 24 : 28;
+		const offset = pageIndex === 0 ? 0 : 24 + (pageIndex - 1) * 28;
+
+		for (let i = 0; i < PAGE_SIZE; i++) {
 			const absoluteIndex = offset + i;
-			const app = currentApps.find(a => {
-				const pos = currentPositions.get(a.id);
-				return pos === absoluteIndex;
-			});
+			const app = appsList.find(a => positions.get(a.id) === absoluteIndex);
 			items.push(app ? app.id : getEmptySlotId(pageIndex, i));
 		}
 		return items;
-	}, []);
+	};
 
-	const [page0Items, setPage0Items] = useState<string[]>([]);
-	const [page1Items, setPage1Items] = useState<string[]>([]);
+	// Helper to compute dock items
+	const computeDockItems = (positions: Map<string, number>) => {
+		const dock: { id: string; pos: number }[] = [];
+		positions.forEach((pos, id) => {
+			if (pos >= 100) dock.push({ id, pos });
+		});
+		dock.sort((a, b) => a.pos - b.pos);
+		return dock.map(d => d.id);
+	};
 
-	// Sync only when NOT dragging
+	// Lazy initial state (computed once on mount)
+	const [page0Items, setPage0Items] = useState<string[]>(() => computePageItems(0, iosAppPositions, apps));
+	const [page1Items, setPage1Items] = useState<string[]>(() => computePageItems(1, iosAppPositions, apps));
+	const [dockItemIds, setDockItemIds] = useState<string[]>(() => computeDockItems(iosAppPositions));
+
+	// Ref to track if we should sync (skip during drag)
+	const prevPositionsRef = useRef(iosAppPositions);
+
+	// Sync only when store changes AND not dragging
 	useEffect(() => {
-		if (!isDragging) {
-			setPage0Items(generatePageItems(0, iosAppPositions, apps));
-			setPage1Items(generatePageItems(1, iosAppPositions, apps));
-		}
-	}, [iosAppPositions, apps, generatePageItems, isDragging]);
+		// Skip if dragging or if positions haven't changed
+		if (isDragging) return;
+		if (prevPositionsRef.current === iosAppPositions) return;
+
+		prevPositionsRef.current = iosAppPositions;
+
+		const newPage0 = computePageItems(0, iosAppPositions, apps);
+		const newPage1 = computePageItems(1, iosAppPositions, apps);
+		const newDock = computeDockItems(iosAppPositions);
+
+		setPage0Items(prev => JSON.stringify(prev) === JSON.stringify(newPage0) ? prev : newPage0);
+		setPage1Items(prev => JSON.stringify(prev) === JSON.stringify(newPage1) ? prev : newPage1);
+		setDockItemIds(prev => JSON.stringify(prev) === JSON.stringify(newDock) ? prev : newDock);
+	}, [iosAppPositions, isDragging, apps]);
 
 	// --- Sensors ---
 	const sensors = useSensors(
@@ -114,6 +142,15 @@ function HomeScreen() {
 	const [isDraggingSwipe, setIsDraggingSwipe] = useState(false); // For app close transition
 
 	// DOM Refs
+	const touchStartRef = useRef<{ x: number; y: number } | null>(null); // Lifted up for access
+
+	// Reset swipe tracking when drag starts
+	useEffect(() => {
+		if (isDragging) {
+			touchStartRef.current = null;
+		}
+	}, [isDragging]);
+
 	const appContainerRef = useRef<HTMLDivElement>(null);
 	const appOpenOriginRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 	const pageContainerRef = useRef<HTMLDivElement>(null);
@@ -121,8 +158,20 @@ function HomeScreen() {
 	const currentPageRef = useRef(0);
 	useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
 
+	// Drag handlers with cross-container support
+	const { handleDragStart, handleDragOver, handleDragEnd } = useDragHandlers({
+		iosAppPositions,
+		page0Items,
+		page1Items,
+		dockItemIds,
+		setActiveId,
+		setPage0Items,
+		setPage1Items,
+		setDockItemIds,
+		reorderIosApps,
+	});
+
 	// Swipe Tracking
-	const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 	const swipeStateRef = useRef({ currentY: 0, startY: 0, isActive: false, progress: 0 });
 
 	const statusBarColors = useMemo(() => {
@@ -146,142 +195,38 @@ function HomeScreen() {
 		const { droppableContainers, ...rest } = args;
 		const activePage = currentPageRef.current;
 
-		// Filter containers to only include those on the current page
-		// We know IDs are like 'appId' or 'empty-PAGE-INDEX'
-		// But valid app IDs don't have page info directly.
-		// However, we can use our state lists: page0Items, page1Items.
-
-		// Optimization: We can just use rectIntersection for the 'empty' slots (fallback) 
-		// and closestCenter for apps? 
-		// Or simply: Look at `pointerWithin` first.
-
-		// Let's implement a filtered closestCenter.
+		// Filter containers to include:
+		// 1. Current Page Items
+		// 2. Dock Items
 		const validIds = activePage === 0 ? page0Items : page1Items;
 
+
+		// Get Dock IDs dynamically (pos >= 100)
+		// Use local state 'dockItemIds' to support collision with items moved there during drag
+		const allValidIds = [...validIds, ...dockItemIds];
+
 		const filteredContainers = droppableContainers.filter(container => {
-			return validIds.includes(container.id as string);
+			return allValidIds.includes(container.id as string);
 		});
 
-		// First, try rectangle intersection (more accurate for "hovering over")
-		const rectCollisions = rectIntersection({
-			...rest,
-			droppableContainers: filteredContainers
-		});
+		// Optimize for "magnetic" feel: ClosestCenter is trusted more for imprecise dropping.
+		// RectIntersection is checking containment.
 
-		// If we hit something directly, great.
-		if (rectCollisions.length > 0) {
-			return rectCollisions;
-		}
+		// If we are over the Dock, we want sticky behavior.
+		// If we are on Grid, Closest Center helps "snap" to nearest slot even if not fully over it.
 
-		// CUSTOM SNAP LOGIC:
-		// The user wants lenient dropping. If not directly over a slot, snap to nearest.
-		// 'closestCenter' does exactly this by measuring distance to centers.
-		// However, standard dnd-kit behavior might sometimes return nothing if too far?
-		// No, closestCenter generally returns something if there are candidates.
-		// We ensure we ONLY pass filteredContainers (current page items).
+		// Let's try combining:
+		// 1. If we hit a valid rect, good.
+		// 2. If not, use closestCenter.
+		// User requested "tidak perlu presisi" (no need to be precise).
+		// closestCenter IS the less precise, more magnetic one.
+
 		return closestCenter({
 			...rest,
 			droppableContainers: filteredContainers
 		});
-	}, [page0Items, page1Items]); // Re-create if items change (memoized efficiently)
+	}, [page0Items, page1Items, iosAppPositions, dockItemIds]);
 
-	// --- Handlers ---
-
-	const handleDragStart = useCallback((event: DragStartEvent) => {
-		setActiveId(event.active.id as string);
-		triggerHaptic('medium');
-		document.body.style.overflow = 'hidden';
-	}, []);
-
-	const handleDragEnd = useCallback((event: DragEndEvent) => {
-		const { active, over } = event;
-		setActiveId(null);
-		document.body.style.overflow = '';
-
-		let finalOverId = over?.id;
-
-		// --- PRIMARY DROP LOGIC: Force Grid Math ---
-		// We use mathematical grid calculation to determine the drop target slot.
-		// This is more robust than collision detection for cross-page transitions.
-
-		if (active.rect.current.translated) {
-			const activePage = currentPageRef.current;
-			const targetItems = activePage === 0 ? page0Items : page1Items;
-
-			const dragRect = active.rect.current.translated;
-			const dragCenter = {
-				x: dragRect.left + dragRect.width / 2,
-				y: dragRect.top + dragRect.height / 2
-			};
-
-			// Grid Layout Metrics (Matches Tailwind: pt-12, px-4, gap-5)
-			const METRICS = {
-				paddingTop: 48,
-				paddingX: 16,
-				gap: 20,
-				cols: 4,
-				rows: 5
-			};
-
-			const screenW = window.innerWidth;
-
-			// Calculate standard column width
-			const availableWidth = screenW - (METRICS.paddingX * 2);
-			const totalGapWidth = (METRICS.cols - 1) * METRICS.gap;
-			const appWidth = (availableWidth - totalGapWidth) / METRICS.cols;
-
-			const colStride = appWidth + METRICS.gap;
-
-			// Calculate Row and Col based on pointer position relative to Grid Origin
-			const relativeX = dragCenter.x - METRICS.paddingX;
-			const relativeY = dragCenter.y - METRICS.paddingTop;
-
-			let col = Math.floor(relativeX / colStride);
-			let row = Math.floor(relativeY / colStride);
-
-			// Clamp to valid grid range
-			col = Math.max(0, Math.min(METRICS.cols - 1, col));
-			row = Math.max(0, Math.min(METRICS.rows - 1, row));
-
-			const calculatedIndex = row * METRICS.cols + col;
-
-			if (calculatedIndex >= 0 && calculatedIndex < targetItems.length) {
-				finalOverId = targetItems[calculatedIndex];
-			}
-		}
-
-		if (!finalOverId) return;
-
-		// Prevent dropping on self
-		if (active.id === finalOverId) return;
-
-		const isPage0Source = page0Items.includes(active.id as string);
-		const isPage0Target = page0Items.includes(finalOverId as string);
-
-		// Validation: Ensure target is in our managed lists
-		if (!isPage0Source && !page1Items.includes(active.id as string)) return;
-
-		const sourceItems = isPage0Source ? page0Items : page1Items;
-		const targetItems = isPage0Target ? page0Items : page1Items;
-
-		// Get standard indices
-		const oldIndex = sourceItems.indexOf(active.id as string);
-		const newIndex = targetItems.indexOf(finalOverId as string);
-
-		// Calculate global absolute indices for the Store
-		const sourcePageOffset = isPage0Source ? 0 : 20;
-		const targetPageOffset = isPage0Target ? 0 : 20;
-
-		const absoluteFromIndex = sourcePageOffset + oldIndex;
-		const absoluteToIndex = targetPageOffset + newIndex;
-
-		// Commit Reorder to Store (Global State)
-		reorderIosApps(absoluteFromIndex, absoluteToIndex);
-
-		// Note: We deliberately skip local Optimistic UI updates here to avoid complex state synchronization issues
-		// particularly with cross-page moves. The Store update triggers a re-render almost instantly.
-
-	}, [page0Items, page1Items, reorderIosApps]);
 
 	// --- Touch Handling (Swipe/Scroll) ---
 	const handleTouchStart = (e: React.TouchEvent) => {
@@ -441,21 +386,21 @@ function HomeScreen() {
 	}, [isDragging, launchApp]);
 
 	// --- Render Helpers ---
-	const renderGridItem = (id: string, index: number) => {
+	const renderGridItem = (id: string, _index: number) => {
 		const isApp = !id.startsWith('empty-');
 		if (isApp) {
-			const app = apps.find(a => a.id === id);
+			const app = appsMap.get(id);
 			if (!app) return null;
 			return <SortableAppIcon key={id} id={id} app={app} onClick={handleAppClick} />;
 		} else {
 			// ENABLE empty slots as drop targets (remove disabled=true).
 			// They are not draggable because we don't attach listeners in SortableAppIcon if isEmpty=true.
-			return <SortableAppIcon key={id} id={id} app={{ id, name: '', icon: '', platform: 'ios' }} onClick={() => { }} isEmpty={true} />;
+			return <SortableAppIcon key={id} id={id} app={{ id, name: '', icon: '', platform: 'ios', component: 'none' }} onClick={() => { }} isEmpty={true} />;
 		}
 	};
 
 	const renderOverlayItem = (id: string) => {
-		const app = apps.find(a => a.id === id);
+		const app = appsMap.get(id);
 		if (!app) return null;
 		return (
 			<div className="w-16 h-16 pointer-events-none">
@@ -479,8 +424,8 @@ function HomeScreen() {
 	}, [currentApp, appToOpen]);
 
 	const dockApps = useMemo(() => {
-		return apps.filter(a => (iosAppPositions.get(a.id) ?? 0) >= 100).sort((a, b) => (iosAppPositions.get(a.id) ?? 0) - (iosAppPositions.get(b.id) ?? 0));
-	}, [apps, iosAppPositions]);
+		return dockItemIds.map(id => apps.find(a => a.id === id)!).filter(Boolean);
+	}, [apps, dockItemIds]);
 
 	return (
 		<ErrorBoundary>
@@ -504,6 +449,7 @@ function HomeScreen() {
 					sensors={sensors}
 					collisionDetection={pageAwareCollisionDetection}
 					onDragStart={handleDragStart}
+					onDragOver={handleDragOver}
 					onDragEnd={handleDragEnd}
 					measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
 				>
@@ -557,10 +503,9 @@ function HomeScreen() {
 					<DragOverlay>
 						{activeId ? renderOverlayItem(activeId) : null}
 					</DragOverlay>
-				</DndContext>
 
-				<HomeScreenPagination currentPage={currentPage} visible={!currentApp && !appToOpen} />
-				<HomeScreenDock apps={dockApps} onAppClick={handleAppClick} />
+					<HomeScreenDock apps={dockApps} onAppClick={handleAppClick} />
+				</DndContext>
 
 			</div>
 
@@ -586,7 +531,7 @@ function HomeScreen() {
 						font-weight: 600;
 					}
 				`}</style>
-		</ErrorBoundary>
+		</ErrorBoundary >
 	);
 }
 

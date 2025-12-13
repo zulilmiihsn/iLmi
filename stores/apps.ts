@@ -207,86 +207,88 @@ export const useAppsStore = create<AppsStore>((set, get) => ({
 		set(state => {
 			const DOCK_START_POSITION = 100;
 
-			// Only allow reordering within home positions (0-19), not dock (100+)
-			if (fromIndex >= DOCK_START_POSITION || toIndex >= DOCK_START_POSITION) {
-				return state; // Don't allow moving dock apps or to dock positions
-			}
-
 			// Get current iosApps
 			const currentIosApps = state.apps.filter(
 				app => app.platform === 'ios' || app.platform === 'both'
 			);
 
-			// Find app at fromIndex by checking positions (only home positions)
+			// Find app at fromIndex
 			const appAtFromIndex = currentIosApps.find(app => {
 				const pos = state.iosAppPositions.get(app.id);
-				return pos === fromIndex && pos < DOCK_START_POSITION;
+				return pos === fromIndex;
 			});
 
 			if (!appAtFromIndex) return state;
 
-			// Check if toIndex is an empty space (no app at that position, only home positions)
-			const appAtToIndex = currentIosApps.find(app => {
-				const pos = state.iosAppPositions.get(app.id);
-				return pos === toIndex && pos < DOCK_START_POSITION;
-			});
-
-			// Create new positions map - MUST be a new Map instance for React to detect changes
-			const newPositions = new Map<string, number>();
-
-			// Copy all existing positions first (including dock apps - they stay unchanged)
-			currentIosApps.forEach(app => {
-				const pos = state.iosAppPositions.get(app.id);
-				if (pos !== undefined) {
-					newPositions.set(app.id, pos);
-				}
-			});
-
-			// Simple Shift Logic for Insert/Reorder
-			// This handles both same-page and cross-page (e.g. 5 -> 25)
-
-			// 1. Identify valid home apps (positions < DOCK_START_POSITION)
-			// 2. Identify the app being moved
 			const movingAppId = appAtFromIndex.id;
 
-			// 3. Iterate all home apps to update positions
-			currentIosApps.forEach(app => {
-				const currentPos = state.iosAppPositions.get(app.id);
-				if (currentPos === undefined || currentPos >= DOCK_START_POSITION) return;
+			// Separate into Grid and Dock arrays based on CURRENT positions
+			const gridApps: string[] = [];
+			const dockApps: string[] = [];
 
-				if (app.id === movingAppId) {
-					// This is the moved app
-					newPositions.set(app.id, toIndex);
+			// Sort apps by position first to ensure correct array order
+			const sortedApps = [...currentIosApps].sort((a, b) => {
+				const posA = state.iosAppPositions.get(a.id) ?? Infinity;
+				const posB = state.iosAppPositions.get(b.id) ?? Infinity;
+				return posA - posB;
+			});
+
+			sortedApps.forEach(app => {
+				if (app.id === movingAppId) return; // Skip moving app for now
+				const pos = state.iosAppPositions.get(app.id) ?? -1;
+				if (pos >= DOCK_START_POSITION) {
+					dockApps.push(app.id);
 				} else {
-					// Other apps - shift if in range
-					if (fromIndex < toIndex) {
-						// Moving Down (e.g. 0 -> 5). Apps 1,2,3,4,5 need to shift UP (-1) to 0,1,2,3,4
-						if (currentPos > fromIndex && currentPos <= toIndex) {
-							newPositions.set(app.id, currentPos - 1);
-						}
-					} else {
-						// Moving Up (e.g. 5 -> 0). Apps 0,1,2,3,4 need to shift DOWN (+1) to 1,2,3,4,5
-						if (currentPos >= toIndex && currentPos < fromIndex) {
-							newPositions.set(app.id, currentPos + 1);
-						}
-					}
+					gridApps.push(app.id);
 				}
 			});
 
-			// Reorder apps array based on new positions
-			const sortedApps = [...currentIosApps].sort((a, b) => {
+			// Insert moving app into target array
+			if (toIndex >= DOCK_START_POSITION) {
+				// Target is Dock
+				const relativeIndex = Math.min(toIndex - DOCK_START_POSITION, dockApps.length);
+				dockApps.splice(relativeIndex, 0, movingAppId);
+			} else {
+				// Target is Grid
+				const relativeIndex = Math.min(toIndex, gridApps.length);
+				gridApps.splice(relativeIndex, 0, movingAppId);
+			}
+
+			// Rebuild map
+			const newPositions = new Map<string, number>();
+
+			// 1. Grid Items (0, 1, 2...)
+			gridApps.forEach((id, index) => {
+				newPositions.set(id, index);
+			});
+
+			// 2. Dock Items (100, 101, 102...)
+			dockApps.forEach((id, index) => {
+				newPositions.set(id, DOCK_START_POSITION + index);
+			});
+
+			// Preserve other apps
+			state.apps.forEach(app => {
+				if (!(app.platform === 'ios' || app.platform === 'both')) return;
+				if (!newPositions.has(app.id)) {
+					// Should not happen if logic is correct, but keep existing if missed?
+					// No, we rebuilt strictly from current lists.
+				}
+			});
+
+			// Reorder apps array
+			const finalSortedApps = [...currentIosApps].sort((a, b) => {
 				const posA = newPositions.get(a.id) ?? Infinity;
 				const posB = newPositions.get(b.id) ?? Infinity;
 				return posA - posB;
 			});
 
-			// Get non-ios apps (keep their order)
 			const otherApps = state.apps.filter(
 				app => !(app.platform === 'ios' || app.platform === 'both')
 			);
 
 			return {
-				apps: [...sortedApps, ...otherApps],
+				apps: [...finalSortedApps, ...otherApps],
 				iosAppPositions: newPositions,
 			};
 		});
