@@ -109,14 +109,6 @@ export function useHomeScreenGestures({
                     requestAnimationFrame(() => {
                         closeApp(currentApp);
                         setCurrentApp(null);
-
-                        // Refs cleanup handled by unmount, but resetting for safety
-                        if (appContainerRef.current) {
-                            appContainerRef.current.style.transform = '';
-                            appContainerRef.current.style.opacity = '';
-                            appContainerRef.current.style.willChange = 'auto';
-                            appContainerRef.current.style.display = ''; // Reset for next usage
-                        }
                     });
                 }, 450);
             } else {

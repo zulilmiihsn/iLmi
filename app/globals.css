@@ -88,6 +88,7 @@ html.dark {
 }
 
 @layer base {
+
 	html,
 	body {
 		/* Use SF Pro Display only - no fallbacks */
@@ -95,7 +96,8 @@ html.dark {
 			'SF Pro Display',
 			-apple-system,
 			BlinkMacSystemFont;
-		font-weight: 600; /* Semibold as default - thick weight */
+		font-weight: 600;
+		/* Semibold as default - thick weight */
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		font-feature-settings: 'kern' 1;
@@ -193,6 +195,7 @@ html.dark {
 	from {
 		opacity: 0;
 	}
+
 	to {
 		opacity: 1;
 	}
@@ -203,6 +206,7 @@ html.dark {
 		transform: translateY(1rem);
 		opacity: 0;
 	}
+
 	to {
 		transform: translateY(0);
 		opacity: 1;
@@ -214,6 +218,7 @@ html.dark {
 		transform: translateY(2rem);
 		opacity: 0;
 	}
+
 	to {
 		transform: translateY(0);
 		opacity: 1;
@@ -225,6 +230,7 @@ html.dark {
 		transform: translateY(2.5rem);
 		opacity: 0;
 	}
+
 	to {
 		transform: translateY(0);
 		opacity: 1;
@@ -235,6 +241,7 @@ html.dark {
 	from {
 		transform: translateY(100%);
 	}
+
 	to {
 		transform: translateY(0);
 	}
@@ -244,6 +251,7 @@ html.dark {
 	from {
 		transform: translateY(0);
 	}
+
 	to {
 		transform: translateY(100%);
 	}
@@ -253,6 +261,7 @@ html.dark {
 	from {
 		transform: translateX(100%);
 	}
+
 	to {
 		transform: translateX(0);
 	}
@@ -263,6 +272,7 @@ html.dark {
 		transform: scale(0.95);
 		opacity: 0;
 	}
+
 	to {
 		transform: scale(1);
 		opacity: 1;
@@ -273,6 +283,7 @@ html.dark {
 	from {
 		opacity: 1;
 	}
+
 	to {
 		opacity: 0;
 	}
@@ -324,6 +335,7 @@ html.dark {
 	from {
 		transform: translateX(-100%);
 	}
+
 	to {
 		transform: translateX(0);
 	}
@@ -333,6 +345,7 @@ html.dark {
 	from {
 		transform: translateX(0);
 	}
+
 	to {
 		transform: translateX(-100%);
 	}
@@ -342,6 +355,7 @@ html.dark {
 	from {
 		transform: translateX(0);
 	}
+
 	to {
 		transform: translateX(100%);
 	}
@@ -366,4 +380,14 @@ html.dark {
 
 .sheet-close {
 	animation: slideOutToBottomFull 0.4s cubic-bezier(0.19, 1, 0.22, 1) forwards !important;
+}
+
+@layer utilities {
+	.pt-safe-top {
+		padding-top: max(env(safe-area-inset-top), 32px);
+	}
+
+	.safe-area-bottom {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
 }
