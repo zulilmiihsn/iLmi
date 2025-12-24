@@ -28,7 +28,7 @@ function AppIcon({
 	const [isPressed, setIsPressed] = useState(false);
 	const isSvgIcon = app.icon.startsWith('/');
 
-	const iconStyle = isDragging && dragPosition
+	const _iconStyle = isDragging && dragPosition
 		? {
 			position: 'fixed' as const,
 			left: `${dragPosition.x}px`,
@@ -80,6 +80,7 @@ function AppIcon({
 							width={64}
 							height={64}
 							className="w-16 h-16 drop-shadow-lg"
+							style={{ width: 'auto', height: 'auto' }}
 							unoptimized
 						/>
 					) : (
@@ -97,6 +98,7 @@ function AppIcon({
 									width={64}
 									height={64}
 									className="w-full aspect-square mb-1.5 max-w-[64px] mx-auto drop-shadow-lg"
+									style={{ width: '100%', height: 'auto' }}
 									unoptimized
 								/>
 								<span className="text-xs font-medium text-white drop-shadow-md text-center leading-tight w-full">

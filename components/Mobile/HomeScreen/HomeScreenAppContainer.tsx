@@ -13,7 +13,6 @@ interface HomeScreenAppContainerProps {
     appContainerRef: React.RefObject<HTMLDivElement>;
     isSwipingFromBottom: boolean;
     swipeUpPosition: number;
-    swipePosition: number;
     isSwiping: boolean;
     isDraggingSwipe: boolean;
     currentApp: string | null;
@@ -29,7 +28,6 @@ function HomeScreenAppContainer({
     appContainerRef,
     isSwipingFromBottom,
     swipeUpPosition,
-    swipePosition,
     isSwiping,
     isDraggingSwipe,
     currentApp,
@@ -68,7 +66,7 @@ function HomeScreenAppContainer({
             style={{
                 transform: isSwipingFromBottom
                     ? `translateY(-${swipeUpPosition}%)`
-                    : `translateY(${swipePosition}%)`,
+                    : 'translateY(0)',
                 opacity: isSwipingFromBottom && swipeUpPosition > 80 ? 0 : 1,
                 transition: getTransition(),
             }}

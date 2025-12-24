@@ -11,15 +11,10 @@ import {
 	useSensors,
 	TouchSensor,
 	MouseSensor,
-	DragStartEvent,
-	DragEndEvent,
-	DragOverEvent,
 	MeasuringStrategy,
 	CollisionDetection,
-	rectIntersection,
 } from '@dnd-kit/core';
 import {
-	arrayMove,
 	SortableContext,
 	sortableKeyboardCoordinates,
 	rectSortingStrategy,
@@ -33,16 +28,39 @@ import Widget from '../Widget';
 import { useAppsStore } from '../../../stores/apps';
 import { useSettingsStore } from '../../../stores/settings';
 import { getAppComponent } from '../../../utils/appComponents';
-import { RESIZE, HOME_SCREEN, TIMING, LAYOUT } from '../../../constants';
-import { markUserInteraction, triggerHaptic } from '../../../utils/haptic';
+import { triggerHaptic } from '../../../utils/haptic';
 import HomeScreenDock from './HomeScreenDock';
-import HomeScreenPagination from './HomeScreenPagination';
 import HomeScreenAppContainer from './HomeScreenAppContainer';
 import { DragAutoScroller } from './DragAutoScroller';
 import { useDragHandlers } from './useDragHandlers';
+import { useHomeScreenGestures } from './useHomeScreenGestures';
 
 // Helper to generate empty slot IDs
 const getEmptySlotId = (page: number, index: number) => `empty-${page}-${index}`;
+
+// Helper to generate page items (pure function, no hooks)
+const computePageItems = (pageIndex: number, positions: Map<string, number>, appsList: { id: string }[]) => {
+	const items: string[] = [];
+	const PAGE_SIZE = pageIndex === 0 ? 24 : 28;
+	const offset = pageIndex === 0 ? 0 : 24 + (pageIndex - 1) * 28;
+
+	for (let i = 0; i < PAGE_SIZE; i++) {
+		const absoluteIndex = offset + i;
+		const app = appsList.find(a => positions.get(a.id) === absoluteIndex);
+		items.push(app ? app.id : getEmptySlotId(pageIndex, i));
+	}
+	return items;
+};
+
+// Helper to compute dock items
+const computeDockItems = (positions: Map<string, number>) => {
+	const dock: { id: string; pos: number }[] = [];
+	positions.forEach((pos, id) => {
+		if (pos >= 100) dock.push({ id, pos });
+	});
+	dock.sort((a, b) => a.pos - b.pos);
+	return dock.map(d => d.id);
+};
 
 function HomeScreen() {
 	const allApps = useAppsStore(state => state.apps);
@@ -73,54 +91,35 @@ function HomeScreen() {
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const isDragging = activeId !== null;
 
-	// Helper to generate page items (pure function, no hooks)
-	const computePageItems = (pageIndex: number, positions: Map<string, number>, appsList: typeof apps) => {
-		const items: string[] = [];
-		const PAGE_SIZE = pageIndex === 0 ? 24 : 28;
-		const offset = pageIndex === 0 ? 0 : 24 + (pageIndex - 1) * 28;
-
-		for (let i = 0; i < PAGE_SIZE; i++) {
-			const absoluteIndex = offset + i;
-			const app = appsList.find(a => positions.get(a.id) === absoluteIndex);
-			items.push(app ? app.id : getEmptySlotId(pageIndex, i));
-		}
-		return items;
-	};
-
-	// Helper to compute dock items
-	const computeDockItems = (positions: Map<string, number>) => {
-		const dock: { id: string; pos: number }[] = [];
-		positions.forEach((pos, id) => {
-			if (pos >= 100) dock.push({ id, pos });
-		});
-		dock.sort((a, b) => a.pos - b.pos);
-		return dock.map(d => d.id);
-	};
-
 	// Lazy initial state (computed once on mount)
 	const [page0Items, setPage0Items] = useState<string[]>(() => computePageItems(0, iosAppPositions, apps));
 	const [page1Items, setPage1Items] = useState<string[]>(() => computePageItems(1, iosAppPositions, apps));
 	const [dockItemIds, setDockItemIds] = useState<string[]>(() => computeDockItems(iosAppPositions));
 
-	// Ref to track if we should sync (skip during drag)
+	// Refs to avoid stale closures and prevent infinite loops
 	const prevPositionsRef = useRef(iosAppPositions);
+	const appsRef = useRef(apps);
+	appsRef.current = apps; // Always keep current
 
-	// Sync only when store changes AND not dragging
+	// Sync only when store POSITIONS change AND not dragging
 	useEffect(() => {
-		// Skip if dragging or if positions haven't changed
+		// Skip if dragging
 		if (isDragging) return;
+		// Skip if positions haven't changed (reference check)
 		if (prevPositionsRef.current === iosAppPositions) return;
 
 		prevPositionsRef.current = iosAppPositions;
 
-		const newPage0 = computePageItems(0, iosAppPositions, apps);
-		const newPage1 = computePageItems(1, iosAppPositions, apps);
+		// Use ref for apps to avoid it being a dependency
+		const currentApps = appsRef.current;
+		const newPage0 = computePageItems(0, iosAppPositions, currentApps);
+		const newPage1 = computePageItems(1, iosAppPositions, currentApps);
 		const newDock = computeDockItems(iosAppPositions);
 
 		setPage0Items(prev => JSON.stringify(prev) === JSON.stringify(newPage0) ? prev : newPage0);
 		setPage1Items(prev => JSON.stringify(prev) === JSON.stringify(newPage1) ? prev : newPage1);
 		setDockItemIds(prev => JSON.stringify(prev) === JSON.stringify(newDock) ? prev : newDock);
-	}, [iosAppPositions, isDragging, apps]);
+	}, [iosAppPositions, isDragging]); // Removed apps from dependencies
 
 	// --- Sensors ---
 	const sensors = useSensors(
@@ -133,28 +132,35 @@ function HomeScreen() {
 	);
 
 	// --- App / Swipe State ---
+	// --- App / Swipe State ---
 	const [currentApp, setCurrentApp] = useState<string | null>(null);
 	const [appToOpen, setAppToOpen] = useState<string | null>(null);
-	const [isSwiping, setIsSwiping] = useState(false);
-	const [isSwipingFromBottom, setIsSwipingFromBottom] = useState(false);
-	const [swipePosition, setSwipePosition] = useState(0);
-	const [swipeUpPosition, setSwipeUpPosition] = useState(0);
-	const [isDraggingSwipe, setIsDraggingSwipe] = useState(false); // For app close transition
-
-	// DOM Refs
-	const touchStartRef = useRef<{ x: number; y: number } | null>(null); // Lifted up for access
-
-	// Reset swipe tracking when drag starts
-	useEffect(() => {
-		if (isDragging) {
-			touchStartRef.current = null;
-		}
-	}, [isDragging]);
-
 	const appContainerRef = useRef<HTMLDivElement>(null);
-	const appOpenOriginRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
-	const pageContainerRef = useRef<HTMLDivElement>(null);
 	const [currentPage, setCurrentPage] = useState(0);
+
+	// --- App / Swipe State Handled by Custom Hook ---
+	const {
+		handleTouchStart,
+		handleTouchMove,
+		handleTouchEnd,
+		isSwipingFromBottom,
+		isDraggingSwipe,
+		swipeUpPosition,
+	} = useHomeScreenGestures({
+		isDragging,
+		currentApp,
+		appToOpen,
+		currentPage,
+		setCurrentPage,
+		closeApp,
+		setCurrentApp,
+		appContainerRef,
+	});
+
+	// --- App State ---
+	const [isSwiping, setIsSwiping] = useState(false);
+
+	const appOpenOriginRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 	const currentPageRef = useRef(0);
 	useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
 
@@ -171,8 +177,6 @@ function HomeScreen() {
 		reorderIosApps,
 	});
 
-	// Swipe Tracking
-	const swipeStateRef = useRef({ currentY: 0, startY: 0, isActive: false, progress: 0 });
 
 	const statusBarColors = useMemo(() => {
 		const appId = currentApp || appToOpen;
@@ -225,108 +229,7 @@ function HomeScreen() {
 			...rest,
 			droppableContainers: filteredContainers
 		});
-	}, [page0Items, page1Items, iosAppPositions, dockItemIds]);
-
-
-	// --- Touch Handling (Swipe/Scroll) ---
-	const handleTouchStart = (e: React.TouchEvent) => {
-		if (isDragging) return;
-		const touch = e.touches[0];
-		touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-
-		// Page Swipe Init
-		if (!currentApp && !appToOpen) {
-			// Captured by ref
-		}
-
-		// Close App Init
-		if (currentApp && !isSwipingFromBottom) {
-			if (touch.clientY >= window.innerHeight - 40) { // Bottom bar area
-				setIsSwipingFromBottom(true);
-				setSwipeUpPosition(0);
-			}
-		}
-	};
-
-	const handleTouchMove = (e: React.TouchEvent) => {
-		if (isDragging || !touchStartRef.current) return;
-		const cx = e.touches[0].clientX;
-		const cy = e.touches[0].clientY;
-		const startX = touchStartRef.current.x;
-		const startY = touchStartRef.current.y;
-		const deltaX = cx - startX;
-		const deltaY = cy - startY;
-
-		// Page Swipe
-		if (!currentApp && !appToOpen) {
-			// dnd-kit should let this pass if it's horizontal swipe (tolerance)
-			// Manually animate page container?
-			// React state 'currentPage' handles the main position.
-			// We can do resistance if needed but keeping it simple:
-			// Just detect end.
-		}
-
-		// Close App Swipe
-		if (currentApp && isSwipingFromBottom) {
-			const progress = Math.max(0, Math.min(100, ((startY - cy) / window.innerHeight) * 100));
-			setIsDraggingSwipe(true);
-			requestAnimationFrame(() => {
-				if (appContainerRef.current) {
-					appContainerRef.current.style.transform = `translate3d(0, -${progress}vh, 0)`;
-					appContainerRef.current.style.transition = 'none';
-					if (progress > 80) appContainerRef.current.style.opacity = `${1 - (progress - 80) / 20}`;
-				}
-			});
-		}
-	};
-
-	const handleTouchEnd = (e: React.TouchEvent) => {
-		if (isDragging || !touchStartRef.current) return;
-		const cx = e.changedTouches[0].clientX;
-		const cy = e.changedTouches[0].clientY;
-		const startX = touchStartRef.current.x;
-		const deltaX = cx - startX;
-
-		// Page Swipe
-		if (!currentApp && !appToOpen) {
-			const SWIPE_THRESHOLD = window.innerWidth * 0.2;
-			if (deltaX < -SWIPE_THRESHOLD && currentPage < 1) setCurrentPage(1);
-			if (deltaX > SWIPE_THRESHOLD && currentPage > 0) setCurrentPage(0);
-		}
-
-		// Close App Swipe
-		if (currentApp && isSwipingFromBottom) {
-			setIsSwipingFromBottom(false);
-			setIsDraggingSwipe(false);
-			const deltaY = touchStartRef.current.y - cy;
-			if (deltaY > window.innerHeight * 0.2) {
-				// Close
-				if (appContainerRef.current) {
-					appContainerRef.current.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-					appContainerRef.current.style.transform = `translate3d(0, -100vh, 0)`;
-					appContainerRef.current.style.opacity = '0';
-				}
-				setTimeout(() => {
-					closeApp(currentApp);
-					setCurrentApp(null);
-					setSwipeUpPosition(0);
-					if (appContainerRef.current) {
-						appContainerRef.current.style.transform = '';
-						appContainerRef.current.style.opacity = '';
-					}
-				}, 300);
-			} else {
-				// Reset
-				if (appContainerRef.current) {
-					appContainerRef.current.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-					appContainerRef.current.style.transform = 'translate3d(0, 0, 0)';
-					appContainerRef.current.style.opacity = '1';
-				}
-			}
-		}
-
-		touchStartRef.current = null;
-	};
+	}, [page0Items, page1Items, dockItemIds]);
 
 	const handleAppClick = useCallback((appId: string) => {
 		if (isDragging) return;
@@ -514,7 +417,6 @@ function HomeScreen() {
 				appContainerRef={appContainerRef}
 				isSwipingFromBottom={isSwipingFromBottom}
 				swipeUpPosition={swipeUpPosition}
-				swipePosition={swipePosition}
 				isSwiping={isSwiping}
 				isDraggingSwipe={isDraggingSwipe}
 				currentApp={currentApp}

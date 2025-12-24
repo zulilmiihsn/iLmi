@@ -22,13 +22,9 @@ export type AppComponentName =
 	| 'Maps';
 
 // Loading component untuk dynamic imports
+// Loading component untuk dynamic imports (Clean native-like splash)
 const LoadingComponent = () => (
-	<div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-		<div className="text-center">
-			<div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-			<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Loading...</p>
-		</div>
-	</div>
+	<div className="w-full h-full bg-white dark:bg-black" />
 );
 
 // Dynamic imports untuk code splitting

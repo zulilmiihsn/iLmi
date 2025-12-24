@@ -27,7 +27,7 @@ const STORAGE_KEY = 'ilmi_file_system';
  */
 function getDefaultFileSystem(): FileSystemData {
 	const now = new Date().toISOString();
-	
+
 	return {
 		lastModified: now,
 		items: [
@@ -57,8 +57,8 @@ export function loadFileSystem(): FileSystemData {
 		if (stored) {
 			return JSON.parse(stored);
 		}
-	} catch (error) {
-		console.error('Error loading file system:', error);
+	} catch {
+		// Silent fail, return default
 	}
 
 	// Initialize with default data
@@ -76,8 +76,8 @@ export function saveFileSystem(data: FileSystemData): void {
 	try {
 		data.lastModified = new Date().toISOString();
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-	} catch (error) {
-		console.error('Error saving file system:', error);
+	} catch {
+		// Silent fail
 	}
 }
 

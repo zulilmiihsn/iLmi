@@ -278,16 +278,17 @@ export default function Notes() {
 				});
 
 				if (Array.isArray(parsed)) {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					const validNotes = parsed.map((n: any) => ({
+					// Define temporary type for parsed JSON before date conversion
+					type SavedNote = Omit<Note, 'date'> & { date: string | Date };
+					const validNotes = (parsed as SavedNote[]).map((n) => ({
 						...n,
 						// Ensure date is a Date object, fallback to now if missing/invalid
-						date: n.date instanceof Date && !isNaN(n.date.getTime()) ? n.date : new Date(),
+						date: new Date(n.date) instanceof Date && !isNaN(new Date(n.date).getTime()) ? new Date(n.date) : new Date(),
 					}));
 					setNotes(validNotes);
 				}
-			} catch (e) {
-				console.error('Failed to parse notes', e);
+			} catch {
+				// Silent fail
 				setNotes([]);
 			}
 		}

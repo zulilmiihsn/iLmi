@@ -297,7 +297,7 @@ export function useDragHandlers({
         // Set activeId null AFTER commit so useEffect syncs from updated store
         setActiveId(null);
 
-    }, [iosAppPositions, page0Items, page1Items, dockItemIds, reorderIosApps, setActiveId, setPage0Items, setPage1Items, setDockItemIds]);
+    }, [page0Items, page1Items, dockItemIds, reorderIosApps, setActiveId, setPage0Items, setPage1Items, setDockItemIds]);
 
     return {
         handleDragStart,

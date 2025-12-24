@@ -7,6 +7,7 @@ import { RESIZE } from '../constants';
 import type { DeviceInfo } from '../types';
 import Desktop from '../components/Desktop/Desktop';
 import HomeScreen from '../components/Mobile/HomeScreen';
+import BootScreen from '../components/BootScreen';
 
 export default function Home() {
 	const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
@@ -32,7 +33,7 @@ export default function Home() {
 	}, [debouncedHandleResize]);
 
 	if (!deviceInfo) {
-		return <div className="w-screen h-screen bg-black"></div>;
+		return <BootScreen />;
 	}
 
 	return deviceInfo.platform === 'macos' ? <Desktop /> : <HomeScreen />;

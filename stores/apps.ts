@@ -166,18 +166,22 @@ interface AppsStore {
 // Home apps: positions 0-19, Dock apps: positions 100-103 (separate from home)
 const initialIosApps = defaultApps.filter(app => app.platform === 'ios' || app.platform === 'both');
 const initialIosPositions = new Map<string, number>();
-const DOCK_START_POSITION = 100; // Dock apps start at position 100
-const DOCK_APPS_COUNT = 4; // Last 4 apps go to dock
+const DOCK_START_POSITION = 100;
 
-initialIosApps.forEach((app, index) => {
-	// Last N apps go to dock, rest go to home
-	if (index >= initialIosApps.length - DOCK_APPS_COUNT) {
-		// Dock position: 100 + (index - (total - dock_count))
-		const dockIndex = index - (initialIosApps.length - DOCK_APPS_COUNT);
+// Default Dock Apps (User requested: Safari, Music, Messages, Call)
+const DEFAULT_DOCK_IDS = ['safari', 'music', 'messages', 'phone'];
+
+let gridIndex = 0;
+
+initialIosApps.forEach((app) => {
+	const dockIndex = DEFAULT_DOCK_IDS.indexOf(app.id);
+	if (dockIndex !== -1) {
+		// Assign to specific dock slot based on checking order
 		initialIosPositions.set(app.id, DOCK_START_POSITION + dockIndex);
 	} else {
-		// Home position: 0-19
-		initialIosPositions.set(app.id, index);
+		// Assign to next available grid slot
+		initialIosPositions.set(app.id, gridIndex);
+		gridIndex++;
 	}
 });
 

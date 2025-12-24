@@ -249,9 +249,6 @@ export default function Window({ window: windowProp }: WindowProps) {
 	if (windowState.isMinimized) return null;
 
 	// Calculate styles based on state
-	// When maximized: 0, 0 position, 100% size
-	// When normal: Translate3d for GPU perf, specific px size
-	// When opening from dock: Start from dock icon position/size
 	const windowStyle: React.CSSProperties = {
 		zIndex: windowState.zIndex,
 		// Reset top/left as we use transform now
@@ -265,9 +262,6 @@ export default function Window({ window: windowProp }: WindowProps) {
 		windowStyle.height = `${target.height}px`;
 		windowStyle.transform = `translate3d(${target.x}px, ${target.y}px, 0)`;
 		windowStyle.opacity = 0;
-		// Add a scale effect to simulate squeezing if we could,
-		// but changing width/height combined with translate effectively scales it down.
-		// We could add `filter: brightness(1.5)` temporarily to simulate "energy"
 	} else if (isOpening && windowState.originRect) {
 		windowStyle.width = `${windowState.originRect.width}px`;
 		windowStyle.height = `${windowState.originRect.height}px`;
@@ -281,21 +275,38 @@ export default function Window({ window: windowProp }: WindowProps) {
 			: `translate3d(${windowState.x}px, ${windowState.y}px, 0)`;
 	}
 
+	// Tailwind Classes Map
+	const containerClasses = [
+		'fixed flex flex-col',
+		'rounded-xl overflow-hidden', // Rounded corners
+		'border border-black/10 dark:border-white/10', // Borders
+		'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]', // Inner glow for glass effect
+		'will-change-[transform,width,height]',
+		'transition-[transform,width,height,opacity] duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]', // Smooth animation
+		// Focus states
+		windowState.isFocused
+			? 'shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5),0_0_1px_0_rgba(0,0,0,0.5)] dark:shadow-[0_30px_80px_-10px_rgba(0,0,0,0.6)] z-50'
+			: 'shadow-[0_10px_30px_-5px_rgba(0,0,0,0.2)] grayscale-[0.05] opacity-95 z-10',
+		// Animation states
+		isOpening && !windowState.originRect ? 'opacity-0 scale-95' : 'opacity-100', // Default opening scale
+		isClosing ? 'opacity-0 scale-90 pointer-events-none' : '', // Closing scale
+	].filter(Boolean).join(' ');
+
 	if (isClosing) {
 		return (
-			<div className="macos-window fixed window-closing" style={windowStyle}>
-				<div className="window-header bg-gray-100 dark:bg-gray-800 h-8 flex items-center justify-between px-3 rounded-t-lg cursor-default border-b border-gray-200 dark:border-black/50">
-					<div className="flex items-center gap-[8px]">
-						<div className="window-control window-control-close"></div>
-						<div className="window-control window-control-minimize"></div>
-						<div className="window-control window-control-maximize"></div>
+			<div className={containerClasses} style={windowStyle}>
+				<div className="bg-gray-100 dark:bg-[#1E1E1E] h-9 flex items-center justify-between px-3 rounded-t-xl cursor-default border-b border-gray-200 dark:border-black/50">
+					<div className="flex items-center gap-2">
+						<div className="w-3 h-3 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_1px_#e0443e]"></div>
+						<div className="w-3 h-3 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_1px_#d3a125]"></div>
+						<div className="w-3 h-3 rounded-full bg-[#28c840] shadow-[inset_0_0_0_1px_#00a91d]"></div>
 					</div>
 					<div className="text-xs font-medium text-gray-500/80 dark:text-gray-400">
 						{windowState.title}
 					</div>
 					<div className="w-14"></div>
 				</div>
-				<div className="window-content h-[calc(100%-2rem)] overflow-auto macos-scrollbar"></div>
+				<div className="h-[calc(100%-2.25rem)] bg-white dark:bg-[#1E1E1E]"></div>
 			</div>
 		);
 	}
@@ -303,99 +314,72 @@ export default function Window({ window: windowProp }: WindowProps) {
 	return (
 		<div
 			ref={windowRef}
-			className={`macos-window fixed ${windowState.isFocused ? 'window-focused z-50' : 'window-blurred z-10'
-				} ${isOpening && !windowState.originRect ? 'window-opening' : 'window-opened'}`}
+			className={containerClasses}
 			style={windowStyle}
 			onMouseDown={handleMouseDown}
 			onDoubleClick={handleDoubleClick}
 		>
+			{/* Window Header */}
 			<div
-				className={`window-header h-8 flex items-center justify-between px-3 rounded-t-lg select-none transition-colors duration-200 ${isDragging || isResizing || windowState.isFocused
-					? 'bg-[#E8E8E8] dark:bg-[#282828]'
-					: 'bg-[#F6F6F6] dark:bg-[#1E1E1E]'
-					} `}
+				className={`window-header h-9 flex items-center justify-between px-3 shrink-0 select-none transition-colors duration-200 
+				${isDragging || isResizing || windowState.isFocused
+						? 'bg-[#EDECEC] dark:bg-[#282828] border-b border-gray-300/50 dark:border-black/40' // Active header color
+						: 'bg-[#F6F6F6] dark:bg-[#1E1E1E] border-b border-gray-200 dark:border-white/5' // Inactive header color
+					}`}
 				onDoubleClick={e => {
 					e.stopPropagation();
 					handleDoubleClick();
 				}}
 			>
-				<div className="flex items-center gap-[8px] group">
+				{/* Window Controls */}
+				<div className="flex items-center gap-2 group">
 					<button
-						className="window-control window-control-close group-hover:text-[#4E0002]"
+						className="w-3 h-3 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_1px_#e0443e] flex items-center justify-center text-transparent hover:text-[#4E0002] active:brightness-90 transition-all font-bold p-0 border-none outline-none leading-none"
 						onClick={e => {
 							e.stopPropagation();
 							handleClose();
 						}}
-						aria-label="Close window"
+						aria-label="Close"
 					>
-						<svg
-							className="hidden group-hover:block"
-							width="6"
-							height="6"
-							viewBox="0 0 6 6"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M1 1L5 5M5 1L1 5"
-								stroke="currentColor"
-								strokeWidth="1.2"
-								strokeLinecap="round"
-							/>
+						<svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 block" viewBox="0 0 6 6" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+							<path d="M1 1L5 5M5 1L1 5" />
 						</svg>
 					</button>
 					<button
-						className="window-control window-control-minimize group-hover:text-[#9A5515]"
+						className="w-3 h-3 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_1px_#d3a125] flex items-center justify-center text-transparent hover:text-[#9A5515] active:brightness-90 transition-all font-bold p-0 border-none outline-none leading-none"
 						onClick={e => {
 							e.stopPropagation();
 							handleMinimize();
 						}}
-						aria-label="Minimize window"
+						aria-label="Minimize"
 					>
-						<svg
-							className="hidden group-hover:block"
-							width="6"
-							height="2"
-							viewBox="0 0 6 2"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path d="M1 1H5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+						<svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 block" viewBox="0 0 6 2" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+							<path d="M1 1H5" />
 						</svg>
 					</button>
 					<button
-						className="window-control window-control-maximize group-hover:text-[#006500]"
+						className="w-3 h-3 rounded-full bg-[#28c840] shadow-[inset_0_0_0_1px_#00a91d] flex items-center justify-center text-transparent hover:text-[#006500] active:brightness-90 transition-all font-bold p-0 border-none outline-none leading-none"
 						onClick={e => {
 							e.stopPropagation();
 							storeRef.current.maximizeWindow(windowState.id);
 						}}
-						aria-label={windowState.isMaximized ? "Restore window" : "Maximize window"}
+						aria-label="Maximize"
 					>
-						<svg
-							className="hidden group-hover:block"
-							width="6"
-							height="6"
-							viewBox="0 0 6 6"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M1 5L5 1M5 1H2M5 1V4"
-								stroke="currentColor"
-								strokeWidth="1.2"
-								strokeLinecap="round"
-							/>
+						<svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 block" viewBox="0 0 6 6" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+							<path d="M1 5L5 1M5 1H2M5 1V4" />
 						</svg>
 					</button>
 				</div>
-				<div className="text-xs font-semibold text-gray-700 dark:text-gray-200 opacity-90">
+				<div className="text-[13px] font-semibold text-gray-700/80 dark:text-gray-200/90 tracking-tight">
 					{windowState.title}
 				</div>
 				<div className="w-14"></div>
 			</div>
 
+			{/* Window Content */}
 			<div
-				className={`window-content h-[calc(100%-2rem)] bg-white dark:bg-[#1E1E1E] rounded-b-lg overflow-hidden relative ${!windowState.isFocused && 'pointer-events-none opacity-90 transition-opacity'}`}
+				className={`window-content flex-1 bg-white dark:bg-[#1E1E1E] overflow-hidden relative 
+				${!windowState.isFocused && 'pointer-events-none opacity-95'}`}
 			>
 				<div className="absolute inset-0 overflow-auto macos-scrollbar">
 					{Component && <Component />}
@@ -412,118 +396,15 @@ export default function Window({ window: windowProp }: WindowProps) {
 				{!windowState.isFocused && <div className="absolute inset-0 z-10" />}
 			</div>
 
+			{/* Resize Handle */}
 			{!windowState.isMaximized && (
 				<button
-					className="resize-handle absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize border-none bg-transparent p-0 z-50 touch-none"
+					className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize z-50 opacity-0"
 					onMouseDown={handleResizeStart}
-					aria-label="Resize window"
+					aria-label="Resize"
 					tabIndex={0}
-				></button>
+				/>
 			)}
-
-			<style jsx>{`
-				.macos-window {
-					will-change: transform, width, height;
-					border: 1px solid rgba(0, 0, 0, 0.1);
-					box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-				}
-
-				/* Focus state: Deep, strong shadow */
-				.window-focused {
-					box-shadow:
-						0 20px 50px -12px rgba(0, 0, 0, 0.5),
-						0 0 1px 0 rgba(0, 0, 0, 0.5);
-					border-color: rgba(255, 255, 255, 0.1);
-				}
-
-				/* Blurred state: Subtle, flat shadow */
-				.window-blurred {
-					box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
-					filter: grayscale(0.05);
-				}
-
-				/* Dark mode adjustments */
-				:global(.dark) .macos-window {
-					border: 1px solid rgba(0, 0, 0, 0.4);
-					box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); /* Top highlight */
-				}
-				:global(.dark) .window-focused {
-					box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.6);
-				}
-
-				/* Smooth corner radius */
-				.macos-window,
-				.window-content {
-					border-radius: 12px;
-				}
-				.window-header {
-					border-radius: 12px 12px 0 0;
-				}
-				.window-content {
-					border-radius: 0 0 12px 12px;
-				}
-
-				/* Transitions */
-				.macos-window {
-					transition:
-						transform 0.25s cubic-bezier(0.2, 0, 0, 1),
-						width 0.25s cubic-bezier(0.2, 0, 0, 1),
-						height 0.25s cubic-bezier(0.2, 0, 0, 1),
-						opacity 0.2s ease-out;
-				}
-
-				.window-opening {
-					opacity: 0;
-					transform: scale(0.95);
-				}
-
-				.window-opened {
-					opacity: 1;
-				}
-
-				.window-closing {
-					opacity: 0;
-					transform: scale(0.9);
-					pointer-events: none;
-				}
-
-				/* Native-like Window Controls */
-				.window-control {
-					width: 12px;
-					height: 12px;
-					border-radius: 50%;
-					border: none;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					padding: 0;
-					flex-shrink: 0;
-					transition: all 0.1s ease;
-				}
-
-				/* Colors & Borders - Accurately matched to macOS */
-				.window-control-close {
-					background-color: #ff5f57;
-					box-shadow: inset 0 0 0 1px #e0443e;
-				}
-				.window-control-minimize {
-					background-color: #febc2e;
-					box-shadow: inset 0 0 0 1px #d3a125;
-				}
-				.window-control-maximize {
-					background-color: #28c840;
-					box-shadow: inset 0 0 0 1px #00a91d;
-				}
-
-				/* Icon states */
-				.window-control:active {
-					filter: brightness(0.85);
-				}
-
-				:global(.dark) .window-header {
-					box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.5); /* Separator line */
-				}
-			`}</style>
 		</div>
 	);
 }
