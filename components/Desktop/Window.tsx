@@ -270,9 +270,12 @@ export default function Window({ window: windowProp }: WindowProps) {
 	} else {
 		windowStyle.width = windowState.isMaximized ? '100%' : `${windowState.width}px`;
 		windowStyle.height = windowState.isMaximized ? '100%' : `${windowState.height}px`;
-		windowStyle.transform = windowState.isMaximized
+
+		const transform = windowState.isMaximized
 			? 'translate3d(0, 0, 0)'
 			: `translate3d(${windowState.x}px, ${windowState.y}px, 0)`;
+
+		windowStyle.transform = isClosing ? `${transform} scale(0.9)` : transform;
 	}
 
 	// Tailwind Classes Map
@@ -289,27 +292,10 @@ export default function Window({ window: windowProp }: WindowProps) {
 			: 'shadow-[0_10px_30px_-5px_rgba(0,0,0,0.2)] grayscale-[0.05] opacity-95 z-10',
 		// Animation states
 		isOpening && !windowState.originRect ? 'opacity-0 scale-95' : 'opacity-100', // Default opening scale
-		isClosing ? 'opacity-0 scale-90 pointer-events-none' : '', // Closing scale
+		isClosing ? 'opacity-0 pointer-events-none' : '', // Closing scale
 	].filter(Boolean).join(' ');
 
-	if (isClosing) {
-		return (
-			<div className={containerClasses} style={windowStyle}>
-				<div className="bg-gray-100 dark:bg-[#1E1E1E] h-9 flex items-center justify-between px-3 rounded-t-xl cursor-default border-b border-gray-200 dark:border-black/50">
-					<div className="flex items-center gap-2">
-						<div className="w-3 h-3 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_1px_#e0443e]"></div>
-						<div className="w-3 h-3 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_1px_#d3a125]"></div>
-						<div className="w-3 h-3 rounded-full bg-[#28c840] shadow-[inset_0_0_0_1px_#00a91d]"></div>
-					</div>
-					<div className="text-xs font-medium text-gray-500/80 dark:text-gray-400">
-						{windowState.title}
-					</div>
-					<div className="w-14"></div>
-				</div>
-				<div className="h-[calc(100%-2.25rem)] bg-white dark:bg-[#1E1E1E]"></div>
-			</div>
-		);
-	}
+
 
 	return (
 		<div

@@ -57,7 +57,7 @@ export const TIMING = {
 
 	// Window animations
 	WINDOW_OPEN_DELAY: 10,
-	WINDOW_CLOSE_DURATION: 200,
+	WINDOW_CLOSE_DURATION: 300,
 	WINDOW_MINIMIZE_DURATION: 300,
 
 	// App animations

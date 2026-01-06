@@ -127,13 +127,13 @@ function Calculator() {
 		}
 	}, [display]);
 
-	// Theme Colors
+	// Theme Colors - Calculator on iOS is always dark styled
 	const theme = {
-		bg: darkMode ? 'bg-black' : 'bg-ios-gray6',
-		text: darkMode ? 'text-white' : 'text-black',
-		historyText: darkMode ? 'text-gray-400' : 'text-gray-500',
-		btnFunction: darkMode ? 'bg-ios-dark-gray4 text-white' : 'bg-ios-gray4 text-black',
-		btnNumber: darkMode ? 'bg-ios-dark-gray5 text-white' : 'bg-white text-black',
+		bg: 'bg-black',
+		text: 'text-white',
+		historyText: 'text-gray-400',
+		btnFunction: 'bg-ios-calc-func text-black',
+		btnNumber: 'bg-ios-calc-num text-white',
 		btnOperator: 'bg-ios-orange text-white',
 		btnOperatorActive: 'bg-white text-ios-orange',
 	};

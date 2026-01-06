@@ -64,9 +64,9 @@ export default function Finder() {
 	}
 
 	return (
-		<div className="finder flex flex-col w-full h-full bg-ios-gray6 dark:bg-ios-dark-gray6" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
+		<div className="finder flex flex-col w-full h-full bg-white dark:bg-[#1E1E1E]" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
 			{/* Toolbar */}
-			<div className="toolbar h-10 bg-ios-gray5 dark:bg-ios-dark-gray5 border-b border-ios-separator dark:border-ios-dark-separator flex items-center gap-2 px-3">
+			<div className="toolbar h-10 bg-[#F5F5F5] dark:bg-[#2C2C2E] border-b border-[#E5E5E5] dark:border-black flex items-center gap-2 px-3">
 				<button
 					className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
 					disabled
@@ -112,12 +112,12 @@ export default function Finder() {
 			{/* Main Content */}
 			<div className="flex flex-1 overflow-hidden">
 				{/* Sidebar */}
-				<div className="sidebar w-48 bg-ios-gray5 dark:bg-ios-dark-gray5 border-r border-ios-separator dark:border-ios-dark-separator overflow-y-auto">
+				<div className="sidebar w-48 bg-[#F0F0F0] dark:bg-[#252525] border-r border-[#E5E5E5] dark:border-black overflow-y-auto">
 					<div className="p-2">
 						{sidebarItems.map((item) => (
 							<button
 								key={item.id}
-								className={`w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 ${currentPath === item.name ? 'bg-ios-blue/20 dark:bg-ios-blue/20' : ''
+								className={`w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 ${currentPath === item.name ? 'bg-[#D1D1D1] dark:bg-[#3A3A3C]' : ''
 									}`}
 								onClick={() => handleSidebarClick(item)}
 							>
@@ -129,12 +129,12 @@ export default function Finder() {
 				</div>
 
 				{/* Content Area */}
-				<div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-ios-dark-gray6">
+				<div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-[#1E1E1E]">
 					<div className="grid grid-cols-6 gap-4">
 						{items.map((item) => (
 							<button
 								key={item.id}
-								className={`p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 flex flex-col items-center transition-colors ${selectedItem === item.id ? 'bg-ios-blue/20 dark:bg-ios-blue/30 ring-2 ring-ios-blue' : ''
+								className={`p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 flex flex-col items-center transition-colors ${selectedItem === item.id ? 'bg-[#0058D0] text-white dark:bg-[#0058D0] dark:text-white' : ''
 									}`}
 								onClick={() => setSelectedItem(item.id)}
 								onDoubleClick={() => {

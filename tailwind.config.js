@@ -17,6 +17,9 @@ module.exports = {
 				'ios-yellow': '#FFCC00',
 				'ios-notes-yellow': '#DCA326',
 				'ios-orange': '#FF9500',
+				// Calculator specific
+				'ios-calc-num': '#333333',
+				'ios-calc-func': '#A5A5A5',
 				'ios-gray': '#8E8E93',
 				'ios-gray2': '#AEAEB2',
 				'ios-gray3': '#C7C7CC',

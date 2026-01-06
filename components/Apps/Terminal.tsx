@@ -50,7 +50,7 @@ export default function Terminal() {
 	}, []);
 
 	return (
-		<div className="terminal w-full h-full bg-black text-ios-green font-mono p-4 flex flex-col" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
+		<div className="terminal w-full h-full bg-black text-green-400 font-mono p-4 flex flex-col" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
 			<div className="output flex-1 overflow-y-auto mb-2">
 				{output.map((line, index) => (
 					<div key={index}>{line}</div>
@@ -61,7 +61,7 @@ export default function Terminal() {
 				<input
 					ref={inputRef}
 					type="text"
-					className="flex-1 bg-transparent border-none outline-none text-ios-green"
+					className="flex-1 bg-transparent border-none outline-none text-green-400"
 					value={currentCommand}
 					onChange={(e) => setCurrentCommand(e.target.value)}
 					onKeyDown={handleKeyDown}
