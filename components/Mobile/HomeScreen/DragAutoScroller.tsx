@@ -11,9 +11,9 @@ export function DragAutoScroller({ onChangePage }: { onChangePage: (dir: 'next' 
         if (!rect) return 'none';
         const windowWidth = window.innerWidth;
 
-        // Prev: 60px -> 25px. Still triggered when inserting in last column.
-        // New: 15px fixed. User must essentially push the bezel.
-        const EDGE_ZONE_WIDTH = 15;
+        // Increased to 40px to reduce sensitivity
+        // Only triggers when user is clearly trying to move to another page
+        const EDGE_ZONE_WIDTH = 40;
 
         const leftEdge = EDGE_ZONE_WIDTH;
         const rightEdge = windowWidth - EDGE_ZONE_WIDTH;
@@ -44,19 +44,12 @@ export function DragAutoScroller({ onChangePage }: { onChangePage: (dir: 'next' 
                 clearTimer();
 
                 if (currentZone !== 'none') {
-                    // Entered a trigger zone, start timer
+                    // Entered edge zone - start timer
+                    // Increased to 800ms to prevent accidental triggers
                     timerRef.current = setTimeout(() => {
                         onChangePage(currentZone === 'left' ? 'prev' : 'next');
-                        // Optional: Do we want repeated scrolls? For paging, usually ONE jump is enough per dwell.
-                        // If we want repeated, use setInterval logic. iOS usually does one jump then waits?
-                        // Let's stick to one jump. User has to exit zone and re-enter or we reset after jump?
-                        // For now, let's just trigger one jump. 
-                        // To allow hopping multiple pages, maybe we reset zone to none briefly?
-                        lastZoneRef.current = 'none'; // Force re-detection logic if they keep holding?
-                        // Actually if they stay holding, onDragMove might not fire if they don't move 1px.
-                        // But if page slides, the sensor might update?
-                        // Let's keep it simple: One jump per entry.
-                    }, 650); // 650ms dwell (slower to prevent accidental triggers)
+                        lastZoneRef.current = 'none'; // Allow repeated trigger if user holds
+                    }, 800);
                 }
             }
         },

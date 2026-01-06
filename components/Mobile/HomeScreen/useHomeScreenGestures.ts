@@ -35,6 +35,13 @@ export function useHomeScreenGestures({
         }
     }, [currentApp]);
 
+    // Clear touch tracking when drag starts to prevent swipe conflict
+    useEffect(() => {
+        if (isDragging) {
+            touchStartRef.current = null;
+        }
+    }, [isDragging]);
+
     const handleTouchStart = (e: React.TouchEvent) => {
         if (isDragging) return;
         const touch = e.touches[0];
