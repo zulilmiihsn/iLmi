@@ -7,10 +7,23 @@ import { RESIZE } from '../constants';
 import type { DeviceInfo } from '../types';
 import Desktop from '../components/Desktop/Desktop';
 import HomeScreen from '../components/Mobile/HomeScreen';
+import { useSettingsStore } from '../stores/settings';
 import BootScreen from '../components/BootScreen';
 
 export default function Home() {
 	const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+	const { darkMode } = useSettingsStore();
+
+	// Sync dark mode class with store
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			if (darkMode) {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		}
+	}, [darkMode]);
 
 	// Debounced resize handler untuk prevent excessive re-renders
 	const debouncedHandleResize = useMemo(

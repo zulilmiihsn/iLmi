@@ -34,7 +34,7 @@ function DesktopClock() {
 	if (!mounted) return null; // Prevent hydration mismatch
 
 	return (
-		<span className="text-xs font-medium text-gray-900 ml-1">
+		<span className="text-xs font-medium text-black dark:text-white ml-1">
 			{currentDate} {currentTime}
 		</span>
 	);
