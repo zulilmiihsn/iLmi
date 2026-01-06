@@ -208,9 +208,8 @@ export const useAppsStore = create<AppsStore>((set, get) => ({
 		return get().runningApps.has(id);
 	},
 	reorderIosApps: (fromIndex: number, toIndex: number) => {
-		set(state => {
-			const DOCK_START_POSITION = 100;
 
+		set(state => {
 			// Get current iosApps
 			const currentIosApps = state.apps.filter(
 				app => app.platform === 'ios' || app.platform === 'both'
@@ -222,66 +221,32 @@ export const useAppsStore = create<AppsStore>((set, get) => ({
 				return pos === fromIndex;
 			});
 
-			if (!appAtFromIndex) return state;
+			if (!appAtFromIndex) {
+				return state;
+			}
 
 			const movingAppId = appAtFromIndex.id;
 
-			// Separate into Grid and Dock arrays based on CURRENT positions
-			const gridApps: string[] = [];
-			const dockApps: string[] = [];
+			// Create new positions Map - simple approach: just update the moved app's position
+			const newPositions = new Map(state.iosAppPositions);
 
-			// Sort apps by position first to ensure correct array order
-			const sortedApps = [...currentIosApps].sort((a, b) => {
-				const posA = state.iosAppPositions.get(a.id) ?? Infinity;
-				const posB = state.iosAppPositions.get(b.id) ?? Infinity;
-				return posA - posB;
+			// Check if toIndex is occupied
+			const appAtToIndex = currentIosApps.find(app => {
+				const pos = newPositions.get(app.id);
+				return pos === toIndex;
 			});
 
-			sortedApps.forEach(app => {
-				if (app.id === movingAppId) return; // Skip moving app for now
-				const pos = state.iosAppPositions.get(app.id) ?? -1;
-				if (pos >= DOCK_START_POSITION) {
-					dockApps.push(app.id);
-				} else {
-					gridApps.push(app.id);
-				}
-			});
-
-			// Insert moving app into target array
-			if (toIndex >= DOCK_START_POSITION) {
-				// Target is Dock
-				const relativeIndex = Math.min(toIndex - DOCK_START_POSITION, dockApps.length);
-				dockApps.splice(relativeIndex, 0, movingAppId);
+			if (appAtToIndex) {
+				// Swap positions
+				newPositions.set(movingAppId, toIndex);
+				newPositions.set(appAtToIndex.id, fromIndex);
 			} else {
-				// Target is Grid
-				const relativeIndex = Math.min(toIndex, gridApps.length);
-				gridApps.splice(relativeIndex, 0, movingAppId);
+				// Just move to empty slot
+				newPositions.set(movingAppId, toIndex);
 			}
 
-			// Rebuild map
-			const newPositions = new Map<string, number>();
-
-			// 1. Grid Items (0, 1, 2...)
-			gridApps.forEach((id, index) => {
-				newPositions.set(id, index);
-			});
-
-			// 2. Dock Items (100, 101, 102...)
-			dockApps.forEach((id, index) => {
-				newPositions.set(id, DOCK_START_POSITION + index);
-			});
-
-			// Preserve other apps
-			state.apps.forEach(app => {
-				if (!(app.platform === 'ios' || app.platform === 'both')) return;
-				if (!newPositions.has(app.id)) {
-					// Should not happen if logic is correct, but keep existing if missed?
-					// No, we rebuilt strictly from current lists.
-				}
-			});
-
-			// Reorder apps array
-			const finalSortedApps = [...currentIosApps].sort((a, b) => {
+			// Reorder apps array by position
+			const sortedIosApps = [...currentIosApps].sort((a, b) => {
 				const posA = newPositions.get(a.id) ?? Infinity;
 				const posB = newPositions.get(b.id) ?? Infinity;
 				return posA - posB;
@@ -292,7 +257,7 @@ export const useAppsStore = create<AppsStore>((set, get) => ({
 			);
 
 			return {
-				apps: [...finalSortedApps, ...otherApps],
+				apps: [...sortedIosApps, ...otherApps],
 				iosAppPositions: newPositions,
 			};
 		});

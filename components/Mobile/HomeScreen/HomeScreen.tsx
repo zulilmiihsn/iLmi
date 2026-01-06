@@ -97,7 +97,6 @@ function HomeScreen() {
 	const [dockItemIds, setDockItemIds] = useState<string[]>(() => computeDockItems(iosAppPositions));
 
 	// Refs to avoid stale closures and prevent infinite loops
-	const prevPositionsRef = useRef(iosAppPositions);
 	const appsRef = useRef(apps);
 	appsRef.current = apps; // Always keep current
 
@@ -105,10 +104,6 @@ function HomeScreen() {
 	useEffect(() => {
 		// Skip if dragging
 		if (isDragging) return;
-		// Skip if positions haven't changed (reference check)
-		if (prevPositionsRef.current === iosAppPositions) return;
-
-		prevPositionsRef.current = iosAppPositions;
 
 		// Use ref for apps to avoid it being a dependency
 		const currentApps = appsRef.current;
@@ -123,10 +118,10 @@ function HomeScreen() {
 
 	// --- Sensors ---
 	const sensors = useSensors(
-		useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
+		useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
 		useSensor(TouchSensor, {
 			// Delay 250ms mimics Long Press. Quick swipes are ignored by drag.
-			activationConstraint: { delay: 250, tolerance: 5 },
+			activationConstraint: { delay: 250, tolerance: 15 },
 		}),
 		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
 	);

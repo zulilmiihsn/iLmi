@@ -36,7 +36,7 @@ function SortableAppIcon({ app, id, onClick, disabled, isEmpty, isDock, classNam
         transition: transition || 'transform 150ms ease', // Faster transition
         opacity: isDragging ? 0 : 1,
         zIndex: isDragging ? 0 : 'auto',
-        touchAction: 'pan-x',
+        touchAction: 'none',
         willChange: transform ? 'transform' : 'auto',
     };
 
