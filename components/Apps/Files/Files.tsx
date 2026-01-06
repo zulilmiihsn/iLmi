@@ -217,23 +217,23 @@ export default function Files() {
 
 	// Theme Objects
 	const theme = {
-		bg: darkMode ? 'bg-black' : 'bg-gray-100',
+		bg: darkMode ? 'bg-black' : 'bg-ios-gray6',
 		text: darkMode ? 'text-white' : 'text-black',
-		textSecondary: darkMode ? 'text-gray-400' : 'text-gray-700',
-		textMuted: 'text-gray-400',
-		headerBg: darkMode ? 'bg-black border-gray-800' : 'bg-white border-gray-200',
-		searchBg: darkMode ? 'bg-[#1C1C1E]' : 'bg-gray-100',
+		textSecondary: darkMode ? 'text-ios-gray' : 'text-gray-700',
+		textMuted: 'text-ios-gray',
+		headerBg: darkMode ? 'bg-black border-ios-dark-separator' : 'bg-white border-ios-separator',
+		searchBg: darkMode ? 'bg-ios-dark-gray6' : 'bg-ios-gray5',
 		searchPlaceholder: darkMode ? 'placeholder-gray-500' : 'placeholder-gray-500',
-		itemBg: darkMode ? 'bg-[#1C1C1E]' : 'bg-white',
-		itemIconFolder: 'text-blue-500',
-		itemIconFile: 'text-gray-400',
-		tabBarBg: darkMode ? 'bg-black border-gray-800' : 'bg-white border-gray-200',
-		activeTab: 'text-blue-500',
-		inactiveTab: darkMode ? 'text-gray-400' : 'text-gray-500',
-		tabHighlight: 'bg-blue-500/20',
-		actionMenuBg: darkMode ? 'bg-gray-800/70 border-gray-700' : 'bg-white/95 border-white/20',
-		modalBg: darkMode ? 'bg-[#1C1C1E]/90' : 'bg-white/90',
-		modalInputBg: darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black',
+		itemBg: darkMode ? 'bg-ios-dark-gray6' : 'bg-white',
+		itemIconFolder: 'text-ios-blue',
+		itemIconFile: 'text-ios-gray',
+		tabBarBg: darkMode ? 'bg-black border-ios-dark-separator' : 'bg-white border-ios-separator',
+		activeTab: 'text-ios-blue',
+		inactiveTab: darkMode ? 'text-ios-gray' : 'text-gray-500',
+		tabHighlight: 'bg-ios-blue/20',
+		actionMenuBg: darkMode ? 'bg-ios-dark-gray5/70 border-gray-700' : 'bg-white/95 border-white/20',
+		modalBg: darkMode ? 'bg-ios-dark-gray6/90' : 'bg-white/90',
+		modalInputBg: darkMode ? 'bg-ios-dark-gray5 text-white' : 'bg-ios-gray6 text-black',
 	};
 
 	return (
@@ -249,7 +249,7 @@ export default function Files() {
 						{activeTab === 'browse' && folderPath.length > 1 ? (
 							<button
 								onClick={handleBack}
-								className="flex items-center text-blue-500 text-base font-medium"
+								className="flex items-center text-ios-blue text-base font-medium"
 							>
 								<svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
@@ -282,7 +282,7 @@ export default function Files() {
 							className="w-8 h-8 flex items-center justify-center"
 						>
 							<svg
-								className={`w-5 h-5 ${darkMode ? 'text-blue-500' : 'text-blue-500'}`}
+								className={`w-5 h-5 ${darkMode ? 'text-ios-blue' : 'text-ios-blue'}`}
 								fill="currentColor"
 								viewBox="0 0 24 24"
 							>
@@ -394,7 +394,7 @@ export default function Files() {
 							<h3 className={`text-lg font-semibold mb-1 ${theme.text}`}>Empty Folder</h3>
 							<button
 								onClick={() => setShowCreateDialog(true)}
-								className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg font-medium active:bg-blue-600 transition-colors"
+								className="mt-4 px-4 py-2 bg-ios-blue text-white rounded-lg font-medium active:bg-blue-600 transition-colors"
 							>
 								Create Folder
 							</button>

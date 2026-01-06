@@ -281,13 +281,13 @@ function Clock() {
 		border: baseTheme.border,
 		activeItem: baseTheme.activeItem,
 		// Clock-specific extensions
-		header: darkMode ? 'bg-black/80 border-gray-800' : 'bg-white/95 border-gray-200',
+		header: darkMode ? 'bg-black/80 border-ios-dark-separator' : 'bg-white/95 border-ios-separator',
 		tabBar: `${baseTheme.tabBarBg} ${baseTheme.border}`,
 		input: darkMode
-			? 'bg-gray-900 border-gray-800 text-white'
-			: 'bg-gray-100 border-gray-300 text-black',
-		resetBtn: darkMode ? 'bg-gray-800 text-white' : 'bg-gray-200 text-black',
-		disabledBtn: darkMode ? 'bg-gray-900 text-gray-600' : 'bg-gray-100 text-gray-400',
+			? 'bg-ios-dark-gray6 border-ios-dark-separator text-white'
+			: 'bg-ios-gray6 border-ios-gray4 text-black',
+		resetBtn: darkMode ? 'bg-ios-dark-gray5 text-white' : 'bg-ios-gray5 text-black',
+		disabledBtn: darkMode ? 'bg-ios-dark-gray6 text-gray-600' : 'bg-ios-gray6 text-gray-400',
 		tabText: baseTheme.tabActive,
 		tabTextInactive: baseTheme.tabInactive,
 	}), [baseTheme, darkMode]);

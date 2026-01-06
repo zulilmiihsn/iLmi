@@ -32,28 +32,28 @@ const DeleteAlert = ({
 }) => (
 	<div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] animate-fade-in">
 		<div
-			className={`${darkMode ? 'bg-[#1C1C1E]/85 text-white' : 'bg-[#F2F2F7]/85 text-black'} w-[270px] rounded-[14px] overflow-hidden text-center backdrop-blur-xl shadow-lg animate-scale-in transition-colors`}
+			className={`${darkMode ? 'bg-ios-dark-gray6/85 text-white' : 'bg-ios-gray6/85 text-black'} w-[270px] rounded-[14px] overflow-hidden text-center backdrop-blur-xl shadow-lg animate-scale-in transition-colors`}
 		>
 			<div
-				className={`pt-5 pb-4 px-4 border-b ${darkMode ? 'border-[#38383A]/50' : 'border-[#3C3C43]/20'}`}
+				className={`pt-5 pb-4 px-4 border-b ${darkMode ? 'border-ios-dark-separator/50' : 'border-gray-300/50'}`}
 			>
-				<h3 className="font-semibold text-[17px] leading-snug">Delete {count} Notes?</h3>
+				<h3 className="text-ios-headline leading-snug">Delete {count} Notes?</h3>
 				<p
-					className={`text-[13px] mt-1 ${darkMode ? 'text-white/60' : 'text-black/60'} leading-snug`}
+					className={`text-ios-footnote mt-1 ${darkMode ? 'text-white/60' : 'text-black/60'} leading-snug`}
 				>
 					This action cannot be undone.
 				</p>
 			</div>
-			<div className={`flex divide-x ${darkMode ? 'divide-[#38383A]/50' : 'divide-[#3C3C43]/20'}`}>
+			<div className={`flex divide-x ${darkMode ? 'divide-ios-dark-separator/50' : 'divide-gray-300/50'}`}>
 				<button
 					onClick={onCancel}
-					className={`flex-1 py-[11px] text-[17px] text-[#007AFF] font-semibold ${darkMode ? 'active:bg-[#2C2C2E]' : 'active:bg-[#3C3C43]/10'} transition-colors`}
+					className={`flex-1 py-[11px] text-ios-headline text-ios-blue font-semibold ${darkMode ? 'active:bg-ios-dark-gray5' : 'active:bg-gray-200'} transition-colors`}
 				>
 					Cancel
 				</button>
 				<button
 					onClick={onDelete}
-					className={`flex-1 py-[11px] text-[17px] text-[#FF3B30] font-normal ${darkMode ? 'active:bg-[#2C2C2E]' : 'active:bg-[#3C3C43]/10'} transition-colors`}
+					className={`flex-1 py-[11px] text-ios-body text-ios-red ${darkMode ? 'active:bg-ios-dark-gray5' : 'active:bg-gray-200'} transition-colors`}
 				>
 					Delete
 				</button>
@@ -64,10 +64,10 @@ const DeleteAlert = ({
 
 const FormatToolbar = ({ onClose, darkMode }: { onClose: () => void; darkMode: boolean }) => (
 	<div
-		className={`${darkMode ? 'bg-[#1C1C1E] border-[#38383A]' : 'bg-[#F9F9F9] border-[#C6C6C8]'} border-t px-4 py-2 pb-safe z-20 absolute bottom-0 left-0 right-0 shadow-lg animate-in slide-in-from-bottom duration-300 transition-colors`}
+		className={`${darkMode ? 'bg-ios-dark-gray6 border-ios-dark-separator' : 'bg-ios-gray6 border-ios-separator'} border-t px-4 py-2 pb-safe z-20 absolute bottom-0 left-0 right-0 shadow-lg animate-in slide-in-from-bottom duration-300 transition-colors`}
 	>
 		<div className="flex items-center justify-between mb-3">
-			<span className={`font-bold text-[15px] ${darkMode ? 'text-white' : 'text-[#1C1C1E]'}`}>
+			<span className={`text-ios-subhead font-bold ${darkMode ? 'text-white' : 'text-ios-dark-gray6'}`}>
 				Format
 			</span>
 			<button
@@ -75,7 +75,7 @@ const FormatToolbar = ({ onClose, darkMode }: { onClose: () => void; darkMode: b
 				className={`${darkMode ? 'bg-[#2C2C2E] active:bg-[#3A3A3C]' : 'bg-[#E5E5EA] active:bg-[#D1D1D6]'} rounded-full p-1 transition-colors`}
 			>
 				<svg
-					className="w-4 h-4 text-[#8E8E93]"
+					className="w-4 h-4 text-ios-gray"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -93,7 +93,7 @@ const FormatToolbar = ({ onClose, darkMode }: { onClose: () => void; darkMode: b
 			{['Title', 'Heading', 'Subheading', 'Body'].map(style => (
 				<button
 					key={style}
-					className={`px-4 py-2 rounded-[8px] whitespace-nowrap text-[15px] ${style === 'Title' ? 'bg-[#DCA326] text-white font-bold shadow-sm' : darkMode ? 'bg-[#2C2C2E] text-white' : 'bg-[#E5E5EA] text-black'} font-semibold`}
+					className={`px-4 py-2 rounded-[8px] whitespace-nowrap text-ios-subhead ${style === 'Title' ? 'bg-[#DCA326] text-white font-bold shadow-sm' : darkMode ? 'bg-ios-dark-gray5 text-white' : 'bg-ios-gray5 text-black'} font-semibold`}
 				>
 					{style}
 				</button>
@@ -153,7 +153,7 @@ const FormatToolbar = ({ onClose, darkMode }: { onClose: () => void; darkMode: b
 					className={`p-2 ${darkMode ? 'bg-[#2C2C2E] active:bg-[#3A3A3C]' : 'bg-[#E5E5EA] active:bg-[#D1D1D6]'} rounded-[8px]`}
 				>
 					<svg
-						className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-[#1C1C1E]'}`}
+						className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-ios-dark-gray6'}`}
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
@@ -211,19 +211,19 @@ const NoteItem = ({
 		>
 			<div className="flex-1 min-w-0 mr-2">
 				<h3
-					className={`font-bold text-[17px] ${darkMode ? 'text-white' : 'text-black'} truncate leading-tight mb-0.5 ${!note.title ? 'text-gray-400 italic' : ''}`}
+					className={`text-ios-headline ${darkMode ? 'text-white' : 'text-black'} truncate leading-tight mb-0.5 ${!note.title ? 'text-gray-400 italic' : ''}`}
 				>
 					{note.title || 'New Note'}
 				</h3>
-				<div className="flex items-start text-[#8E8E93] text-[15px] leading-snug">
+				<div className="flex items-start text-ios-gray text-ios-subhead leading-snug">
 					<span className="mr-2 whitespace-nowrap">
 						{note.date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
 					</span>
-					<span className={`truncate ${darkMode ? 'text-[#8E8E93]' : 'text-[#3C3C43]/60'}`}>
+					<span className={`truncate ${darkMode ? 'text-ios-gray' : 'text-ios-gray2/60'}`}>
 						{note.content || 'No additional text'}
 					</span>
 				</div>
-				<div className="flex items-center text-[#8E8E93] text-[13px] mt-1.5">
+				<div className="flex items-center text-ios-gray text-ios-footnote mt-1.5">
 					<svg className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path
 							strokeLinecap="round"
@@ -236,7 +236,7 @@ const NoteItem = ({
 				</div>
 			</div>
 			{note.hasImage && note.imageSrc && (
-				<div className="w-12 h-12 rounded-[6px] overflow-hidden shrink-0 bg-gray-100 self-start mt-0.5 relative">
+				<div className="w-12 h-12 rounded-[6px] overflow-hidden shrink-0 bg-ios-gray5 self-start mt-0.5 relative">
 					<Image
 						src={note.imageSrc}
 						alt=""
@@ -391,15 +391,15 @@ export default function Notes() {
 
 	// Theme Objects
 	const theme = {
-		bg: darkMode ? 'bg-black' : 'bg-[#F2F2F7]',
+		bg: darkMode ? 'bg-black' : 'bg-ios-gray6',
 		text: darkMode ? 'text-white' : 'text-black',
-		cardBg: darkMode ? 'bg-[#1C1C1E]' : 'bg-white',
-		headerBg: darkMode ? 'bg-black' : 'bg-[#F2F2F7]',
-		searchBg: darkMode ? 'bg-[#1C1C1E]' : 'bg-[#E3E3E8]',
-		placeholder: darkMode ? 'placeholder-[#8E8E93]' : 'placeholder-gray-500',
-		detailHeader: darkMode ? 'bg-black/90 border-gray-800' : 'bg-white/90 border-[#E5E5EA]',
+		cardBg: darkMode ? 'bg-ios-dark-gray6' : 'bg-white',
+		headerBg: darkMode ? 'bg-black' : 'bg-ios-gray6',
+		searchBg: darkMode ? 'bg-ios-dark-gray6' : 'bg-ios-gray5',
+		placeholder: darkMode ? 'placeholder-ios-gray' : 'placeholder-gray-500',
+		detailHeader: darkMode ? 'bg-black/90 border-ios-dark-separator' : 'bg-white/90 border-ios-gray5',
 		detailBg: darkMode ? 'bg-black' : 'bg-white',
-		detailText: darkMode ? 'text-white' : 'text-[#1C1C1E]',
+		detailText: darkMode ? 'text-white' : 'text-ios-dark-gray6',
 	};
 
 	return (
@@ -413,12 +413,12 @@ export default function Notes() {
 						className={`px-4 pt-[30px] pb-2 sticky top-0 z-10 transition-colors ${theme.headerBg}`}
 					>
 						<div className="flex justify-between items-end mb-3">
-							<h1 className="text-3xl font-bold tracking-tight">
+							<h1 className="text-ios-large-title tracking-tight">
 								{selectionMode ? `${selectedCount} Selected` : 'Notes'}
 							</h1>
 							<button
 								onClick={toggleSelectionMode}
-								className="text-[#DCA326] font-semibold text-[17px] active:opacity-50 transition-opacity"
+								className="text-ios-notes-yellow font-semibold text-ios-body active:opacity-50 transition-opacity"
 							>
 								{selectionMode ? 'Done' : 'Select'}
 							</button>
@@ -443,7 +443,7 @@ export default function Notes() {
 							</div>
 							<input
 								type="text"
-								className={`block w-full pl-9 pr-8 py-2 border-none rounded-[10px] leading-5 focus:outline-none transition-colors text-[17px] ${theme.searchBg} ${theme.placeholder} ${darkMode ? 'text-white' : 'text-black'}`}
+								className={`block w-full pl-9 pr-8 py-2 border-none rounded-[10px] leading-5 focus:outline-none transition-colors text-ios-body ${theme.searchBg} ${theme.placeholder} ${darkMode ? 'text-white' : 'text-black'}`}
 								placeholder="Search"
 								value={searchQuery}
 								onChange={e => setSearchQuery(e.target.value)}
@@ -493,7 +493,7 @@ export default function Notes() {
 								{/* Today Section */}
 								{todayNotes.length > 0 && (
 									<div className="mb-8">
-										<h2 className="text-[22px] font-bold mb-2 ml-1 tracking-tight">Today</h2>
+										<h2 className="text-ios-title2 mb-2 ml-1 tracking-tight">Today</h2>
 										<div
 											className={`${theme.cardBg} rounded-[14px] overflow-hidden shadow-sm transition-colors`}
 										>
@@ -514,7 +514,7 @@ export default function Notes() {
 								{/* Previous Days Section */}
 								{previousNotes.length > 0 && (
 									<div className="mb-8">
-										<h2 className="text-[22px] font-bold mb-2 ml-1 tracking-tight">
+										<h2 className="text-ios-title2 mb-2 ml-1 tracking-tight">
 											Previous 30 Days
 										</h2>
 										<div
@@ -539,16 +539,16 @@ export default function Notes() {
 
 					{/* Bottom Toolbar */}
 					<div
-						className={`border-t pb-safe z-50 relative transition-colors ${darkMode ? 'bg-black border-[#38383A]' : 'bg-[#F2F2F7] border-[#C6C6C8]'}`}
+						className={`border-t pb-safe z-50 relative transition-colors ${darkMode ? 'bg-black border-ios-dark-separator' : 'bg-ios-gray6 border-ios-separator'}`}
 					>
 						<div className="flex justify-between items-center h-[44px] px-4">
 							{selectionMode ? (
 								<>
-									<button className="h-full px-4 -ml-4 flex items-center text-[17px] text-[#DCA326] font-medium active:opacity-50 transition-opacity">
+									<button className="h-full px-4 -ml-4 flex items-center text-ios-body text-ios-notes-yellow font-medium active:opacity-50 transition-opacity">
 										Move
 									</button>
 									<button
-										className={`h-full px-4 -mr-4 flex items-center text-[17px] font-medium active:opacity-50 transition-opacity ${selectedCount > 0 ? 'text-[#DCA326]' : 'text-[#DCA326]/50'}`}
+										className={`h-full px-4 -mr-4 flex items-center text-ios-body font-medium active:opacity-50 transition-opacity ${selectedCount > 0 ? 'text-ios-notes-yellow' : 'text-ios-notes-yellow/50'}`}
 										onClick={deleteSelectedNotes}
 										disabled={selectedCount === 0}
 									>
@@ -559,7 +559,7 @@ export default function Notes() {
 								<>
 									<div className="flex-1"></div>
 									<div
-										className={`text-[11px] font-normal text-center flex-1 whitespace-nowrap ${darkMode ? 'text-white/80' : 'text-black/80'}`}
+										className={`text-ios-caption2 font-normal text-center flex-1 whitespace-nowrap ${darkMode ? 'text-white/80' : 'text-black/80'}`}
 									>
 										{notes.length} Notes
 									</div>
@@ -570,7 +570,7 @@ export default function Notes() {
 												e.stopPropagation();
 												createNewNote();
 											}}
-											className="w-11 h-11 flex items-center justify-center text-[#DCA326] hover:bg-[#0000000d] active:bg-[#0000001a] rounded-full transition-colors -mr-2"
+											className="w-11 h-11 flex items-center justify-center text-ios-notes-yellow hover:bg-[#0000000d] active:bg-[#0000001a] rounded-full transition-colors -mr-2"
 											aria-label="New Note"
 										>
 											<svg
@@ -603,7 +603,7 @@ export default function Notes() {
 					>
 						<button
 							onClick={handleBack}
-							className="flex items-center text-[#DCA326] font-medium text-[17px] active:opacity-50 transition-opacity"
+							className="flex items-center text-ios-notes-yellow font-medium text-ios-body active:opacity-50 transition-opacity"
 						>
 							<svg className="w-6 h-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path
@@ -616,7 +616,7 @@ export default function Notes() {
 							Notes
 						</button>
 						<div className="flex items-center gap-5">
-							<button className="text-[#DCA326] active:opacity-50 transition-opacity">
+							<button className="text-ios-notes-yellow active:opacity-50 transition-opacity">
 								<svg
 									className="w-[22px] h-[22px]"
 									fill="none"
@@ -633,7 +633,7 @@ export default function Notes() {
 							</button>
 							<button
 								onClick={() => setShowFormatToolbar(true)}
-								className={`text-[#DCA326] active:opacity-50 transition-opacity ${showFormatToolbar ? 'opacity-50' : ''}`}
+								className={`text-ios-notes-yellow active:opacity-50 transition-opacity ${showFormatToolbar ? 'opacity-50' : ''}`}
 							>
 								<svg
 									className="w-[22px] h-[22px]"
@@ -651,7 +651,7 @@ export default function Notes() {
 							</button>
 							<button
 								onClick={handleBack}
-								className="text-[#DCA326] font-bold text-[17px] active:opacity-50 transition-opacity"
+								className="text-ios-notes-yellow text-ios-headline active:opacity-50 transition-opacity"
 							>
 								Done
 							</button>
@@ -661,7 +661,7 @@ export default function Notes() {
 					{/* Detail Content */}
 					<div className="flex-1 overflow-y-auto px-5 py-4">
 						<div className="mb-6">
-							<span className="text-[#8E8E93] text-[13px] font-medium block text-center mb-5">
+							<span className="text-ios-gray text-ios-footnote font-medium block text-center mb-5">
 								{currentNote?.date.toLocaleDateString([], { month: 'long', day: 'numeric' })} at{' '}
 								{currentNote?.date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
 							</span>
@@ -670,14 +670,14 @@ export default function Notes() {
 								value={currentNote?.title || ''}
 								onChange={e => updateCurrentNote({ title: e.target.value })}
 								placeholder="Title"
-								className={`text-[28px] font-bold mb-2 w-full border-none outline-none placeholder-gray-300 bg-transparent ${theme.detailText}`}
+								className={`text-ios-title1 mb-2 w-full border-none outline-none placeholder-gray-300 bg-transparent ${theme.detailText}`}
 							/>
 						</div>
 						<textarea
 							value={currentNote?.content || ''}
 							onChange={e => updateCurrentNote({ content: e.target.value })}
 							placeholder="Type something..."
-							className={`w-full h-[calc(100%-100px)] resize-none border-none outline-none text-[17px] leading-relaxed bg-transparent placeholder-gray-300 ${theme.detailText}`}
+							className={`w-full h-[calc(100%-100px)] resize-none border-none outline-none text-ios-body leading-relaxed bg-transparent placeholder-gray-300 ${theme.detailText}`}
 						/>
 					</div>
 

@@ -64,9 +64,9 @@ export default function Finder() {
 	}
 
 	return (
-		<div className="finder flex flex-col w-full h-full bg-gray-50 dark:bg-gray-900" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
+		<div className="finder flex flex-col w-full h-full bg-ios-gray6 dark:bg-ios-dark-gray6" style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}>
 			{/* Toolbar */}
-			<div className="toolbar h-10 bg-gray-100 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 flex items-center gap-2 px-3">
+			<div className="toolbar h-10 bg-ios-gray5 dark:bg-ios-dark-gray5 border-b border-ios-separator dark:border-ios-dark-separator flex items-center gap-2 px-3">
 				<button
 					className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
 					disabled
@@ -81,7 +81,7 @@ export default function Finder() {
 				>
 					→
 				</button>
-				<div className="flex-1 px-3 py-1 bg-white dark:bg-gray-700 rounded text-xs border border-gray-300 dark:border-gray-600">
+				<div className="flex-1 px-3 py-1 bg-white dark:bg-ios-dark-gray5 rounded text-xs border border-ios-separator dark:border-ios-dark-separator">
 					{currentPath}
 				</div>
 				<button
@@ -100,7 +100,7 @@ export default function Finder() {
 				</button>
 				{selectedItem && (
 					<button
-						className="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-red-500"
+						className="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-ios-red"
 						onClick={() => deleteItem(selectedItem)}
 						title="Delete"
 					>
@@ -112,14 +112,13 @@ export default function Finder() {
 			{/* Main Content */}
 			<div className="flex flex-1 overflow-hidden">
 				{/* Sidebar */}
-				<div className="sidebar w-48 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 overflow-y-auto">
+				<div className="sidebar w-48 bg-ios-gray5 dark:bg-ios-dark-gray5 border-r border-ios-separator dark:border-ios-dark-separator overflow-y-auto">
 					<div className="p-2">
 						{sidebarItems.map((item) => (
 							<button
 								key={item.id}
-								className={`w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 ${
-									currentPath === item.name ? 'bg-blue-100 dark:bg-blue-900' : ''
-								}`}
+								className={`w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 ${currentPath === item.name ? 'bg-ios-blue/20 dark:bg-ios-blue/20' : ''
+									}`}
 								onClick={() => handleSidebarClick(item)}
 							>
 								<span>{item.icon}</span>
@@ -130,14 +129,13 @@ export default function Finder() {
 				</div>
 
 				{/* Content Area */}
-				<div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-900">
+				<div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-ios-dark-gray6">
 					<div className="grid grid-cols-6 gap-4">
 						{items.map((item) => (
 							<button
 								key={item.id}
-								className={`p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 flex flex-col items-center transition-colors ${
-									selectedItem === item.id ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400' : ''
-								}`}
+								className={`p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 flex flex-col items-center transition-colors ${selectedItem === item.id ? 'bg-ios-blue/20 dark:bg-ios-blue/30 ring-2 ring-ios-blue' : ''
+									}`}
 								onClick={() => setSelectedItem(item.id)}
 								onDoubleClick={() => {
 									if (item.type === 'folder') {

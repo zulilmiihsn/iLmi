@@ -99,40 +99,39 @@ export default function Photos() {
 	const theme = {
 		bg: darkMode ? 'bg-black' : 'bg-white',
 		text: darkMode ? 'text-white' : 'text-black',
-		textSecondary: darkMode ? 'text-gray-400' : 'text-gray-500',
-		headerBg: darkMode ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200/50',
-		tabBarBg: darkMode ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200/80',
-		activeTab: 'text-blue-500',
+		textSecondary: darkMode ? 'text-ios-gray' : 'text-ios-gray',
+		headerBg: darkMode ? 'bg-black/95 border-ios-dark-separator' : 'bg-white/95 border-ios-separator/50',
+		tabBarBg: darkMode ? 'bg-black/95 border-ios-dark-separator' : 'bg-white/95 border-ios-separator/80',
+		activeTab: 'text-ios-blue',
 		inactiveTab: darkMode
-			? 'text-gray-400 hover:text-gray-200'
-			: 'text-gray-400 hover:text-gray-600',
+			? 'text-ios-gray hover:text-white'
+			: 'text-ios-gray hover:text-black',
 		gridBg: darkMode ? 'bg-black' : 'bg-white',
 		albumBg: darkMode
-			? 'bg-gray-900 group-hover:shadow-gray-800/50'
-			: 'bg-gray-100 group-hover:shadow-md',
-		mediaTypeBg: darkMode ? 'bg-[#1C1C1E]' : 'bg-gray-50',
-		mediaTypeBorder: darkMode ? 'divide-gray-800' : 'divide-gray-200',
-		mediaTypeHover: darkMode ? 'active:bg-[#2C2C2E]' : 'active:bg-gray-200',
+			? 'bg-ios-dark-gray5 group-hover:shadow-gray-800/50'
+			: 'bg-ios-gray5 group-hover:shadow-md',
+		mediaTypeBg: darkMode ? 'bg-ios-dark-gray6' : 'bg-ios-gray6',
+		mediaTypeBorder: darkMode ? 'divide-ios-dark-separator' : 'divide-ios-separator',
+		mediaTypeHover: darkMode ? 'active:bg-ios-dark-gray5' : 'active:bg-ios-gray5',
 	};
 
 	// Desktop Sidebar Component
 	const Sidebar = () => (
 		<div
-			className={`hidden md:flex flex-col w-[260px] h-full border-r ${darkMode ? 'bg-[#1E1E1E] border-black' : 'bg-[#F2F3F5] border-[#E5E5E5]'}`}
+			className={`hidden md:flex flex-col w-[260px] h-full border-r ${darkMode ? 'bg-ios-dark-gray6 border-black' : 'bg-ios-gray6 border-ios-separator'}`}
 		>
 			<div className="p-4 pt-6">
-				<h2 className={`text-xs font-semibold px-2 mb-2 ${theme.textSecondary}`}>LIBRARY</h2>
+				<h2 className={`text-ios-caption1 font-semibold px-2 mb-2 ${theme.textSecondary}`}>LIBRARY</h2>
 				<ul className="space-y-1">
 					<li>
 						<button
 							onClick={() => setActiveTab('library')}
-							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${
-								activeTab === 'library'
-									? darkMode
-										? 'bg-gray-700 text-white'
-										: 'bg-gray-300 text-black'
-									: 'hover:bg-black/5 dark:hover:bg-white/10'
-							}`}
+							className={`w-full text-left px-2 py-1.5 rounded-md text-ios-subhead font-medium flex items-center gap-3 transition-colors ${activeTab === 'library'
+								? darkMode
+									? 'bg-gray-700 text-white'
+									: 'bg-gray-300 text-black'
+								: 'hover:bg-black/5 dark:hover:bg-white/10'
+								}`}
 						>
 							<i className="fas fa-images w-4 text-center"></i>
 							Library
@@ -141,13 +140,12 @@ export default function Photos() {
 					<li>
 						<button
 							onClick={() => setActiveTab('foryou')}
-							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${
-								activeTab === 'foryou'
-									? darkMode
-										? 'bg-gray-700 text-white'
-										: 'bg-gray-300 text-black'
-									: 'hover:bg-black/5 dark:hover:bg-white/10'
-							}`}
+							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${activeTab === 'foryou'
+								? darkMode
+									? 'bg-gray-700 text-white'
+									: 'bg-gray-300 text-black'
+								: 'hover:bg-black/5 dark:hover:bg-white/10'
+								}`}
 						>
 							<i className="fas fa-heart w-4 text-center"></i>
 							For You
@@ -156,13 +154,12 @@ export default function Photos() {
 					<li>
 						<button
 							onClick={() => setActiveTab('albums')}
-							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${
-								activeTab === 'albums'
-									? darkMode
-										? 'bg-gray-700 text-white'
-										: 'bg-gray-300 text-black'
-									: 'hover:bg-black/5 dark:hover:bg-white/10'
-							}`}
+							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${activeTab === 'albums'
+								? darkMode
+									? 'bg-gray-700 text-white'
+									: 'bg-gray-300 text-black'
+								: 'hover:bg-black/5 dark:hover:bg-white/10'
+								}`}
 						>
 							<i className="fas fa-layer-group w-4 text-center"></i>
 							Albums
@@ -171,13 +168,12 @@ export default function Photos() {
 					<li>
 						<button
 							onClick={() => setActiveTab('search')}
-							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${
-								activeTab === 'search'
-									? darkMode
-										? 'bg-gray-700 text-white'
-										: 'bg-gray-300 text-black'
-									: 'hover:bg-black/5 dark:hover:bg-white/10'
-							}`}
+							className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${activeTab === 'search'
+								? darkMode
+									? 'bg-gray-700 text-white'
+									: 'bg-gray-300 text-black'
+								: 'hover:bg-black/5 dark:hover:bg-white/10'
+								}`}
 						>
 							<i className="fas fa-search w-4 text-center"></i>
 							Search
@@ -187,7 +183,7 @@ export default function Photos() {
 			</div>
 
 			<div className="p-4 pt-2 flex-1 overflow-y-auto">
-				<h2 className={`text-xs font-semibold px-2 mb-2 ${theme.textSecondary}`}>ALBUMS</h2>
+				<h2 className={`text-ios-caption1 font-semibold px-2 mb-2 ${theme.textSecondary}`}>ALBUMS</h2>
 				<ul className="space-y-1">
 					{albums.map((album, i) => (
 						<li key={i}>
@@ -196,19 +192,18 @@ export default function Photos() {
 									setActiveTab('albums');
 									setSelectedAlbum(album.title);
 								}}
-								className={`w-full text-left px-2 py-1.5 rounded-md text-sm font-medium flex items-center gap-3 transition-colors ${
-									selectedAlbum === album.title
-										? darkMode
-											? 'bg-gray-700 text-white'
-											: 'bg-gray-300 text-black'
-										: 'hover:bg-black/5 dark:hover:bg-white/10'
-								}`}
+								className={`w-full text-left px-2 py-1.5 rounded-md text-ios-subhead font-medium flex items-center gap-3 transition-colors ${selectedAlbum === album.title
+									? darkMode
+										? 'bg-gray-700 text-white'
+										: 'bg-gray-300 text-black'
+									: 'hover:bg-black/5 dark:hover:bg-white/10'
+									}`}
 							>
 								<div className="w-4 h-4 rounded overflow-hidden relative grayscale opacity-70">
 									<Image src={album.image} alt="" fill className="object-cover" />
 								</div>
 								<span className="truncate flex-1">{album.title}</span>
-								<span className={`text-xs ${theme.textSecondary}`}>{album.count}</span>
+								<span className={`text-ios-caption1 ${theme.textSecondary}`}>{album.count}</span>
 							</button>
 						</li>
 					))}
@@ -241,7 +236,7 @@ export default function Photos() {
 							<i className="fas fa-chevron-right"></i>
 						</button>
 					</div>
-					<h1 className="font-semibold text-sm">
+					<h1 className="font-semibold text-ios-subhead">
 						{selectedAlbum ||
 							(activeTab === 'library'
 								? 'Library'
@@ -275,13 +270,13 @@ export default function Photos() {
 								className={`md:hidden px-4 pt-6 pb-2 flex justify-between items-end sticky top-0 backdrop-blur-xl z-20 border-b shadow-sm transition-all duration-300 ${theme.headerBg}`}
 							>
 								<div>
-									<h1 className="text-3xl font-bold tracking-tight">Library</h1>
+									<h1 className="text-ios-large-title font-bold tracking-tight">Library</h1>
 								</div>
 								<div className="flex gap-4">
-									<button className="text-blue-500 font-medium text-base hover:opacity-70 transition-opacity">
+									<button className="text-ios-blue font-medium text-ios-body hover:opacity-70 transition-opacity">
 										Select
 									</button>
-									<button className="text-blue-500 hover:opacity-70 transition-opacity">
+									<button className="text-ios-blue hover:opacity-70 transition-opacity">
 										<i className="fas fa-ellipsis-circle text-xl"></i>
 									</button>
 								</div>
@@ -328,21 +323,20 @@ export default function Photos() {
 							{/* Floating View Selector */}
 							<div className="fixed bottom-24 md:bottom-8 left-0 right-0 flex justify-center z-20 pointer-events-none animate-in slide-in-from-bottom-10 fade-in duration-700 delay-200">
 								<div
-									className={`${darkMode ? 'bg-[#1C1C1E]/80 border-gray-700' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl rounded-full p-1 shadow-lg flex gap-1 pointer-events-auto border hover:scale-105 transition-transform duration-300`}
+									className={`${darkMode ? 'bg-ios-dark-gray6/80 border-ios-dark-separator' : 'bg-white/80 border-ios-separator/50'} backdrop-blur-xl rounded-full p-1 shadow-lg flex gap-1 pointer-events-auto border hover:scale-105 transition-transform duration-300`}
 								>
 									{['Years', 'Months', 'Days', 'All Photos'].map(m => (
 										<button
 											key={m}
 											onClick={() => setViewMode(m.toLowerCase().split(' ')[0] as ViewMode)}
-											className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
-												(viewMode === 'all' && m === 'All Photos') || viewMode === m.toLowerCase()
-													? darkMode
-														? 'bg-gray-600 text-white shadow-sm'
-														: 'bg-gray-200 text-black shadow-sm'
-													: darkMode
-														? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-														: 'text-gray-500 hover:text-black hover:bg-gray-100/50'
-											}`}
+											className={`px-3 py-1.5 rounded-full text-ios-caption1 font-semibold transition-all duration-300 ${(viewMode === 'all' && m === 'All Photos') || viewMode === m.toLowerCase()
+												? darkMode
+													? 'bg-gray-600 text-white shadow-sm'
+													: 'bg-gray-200 text-black shadow-sm'
+												: darkMode
+													? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+													: 'text-gray-500 hover:text-black hover:bg-gray-100/50'
+												}`}
 										>
 											{m}
 										</button>
@@ -359,13 +353,13 @@ export default function Photos() {
 							<div
 								className={`md:hidden px-4 pt-6 pb-2 flex justify-between items-center sticky top-0 backdrop-blur-xl z-20 border-b shadow-sm transition-all ${theme.headerBg}`}
 							>
-								<button className="text-blue-500 text-2xl hover:opacity-70 transition-opacity">
+								<button className="text-ios-blue text-2xl hover:opacity-70 transition-opacity">
 									<i className="fas fa-plus"></i>
 								</button>
-								<h1 className="text-3xl font-bold absolute left-1/2 -translate-x-1/2 tracking-tight">
+								<h1 className="text-ios-large-title font-bold absolute left-1/2 -translate-x-1/2 tracking-tight">
 									Albums
 								</h1>
-								<button className="text-blue-500 text-base font-medium hover:opacity-70 transition-opacity">
+								<button className="text-ios-blue text-ios-body font-medium hover:opacity-70 transition-opacity">
 									Edit
 								</button>
 							</div>
@@ -373,8 +367,8 @@ export default function Photos() {
 							{/* My Albums */}
 							<div className="mt-4 px-4 md:px-0">
 								<div className="flex justify-between items-baseline mb-3">
-									<h2 className="text-xl font-bold">My Albums</h2>
-									<button className="text-blue-500 text-sm hover:opacity-70 transition-opacity">
+									<h2 className="text-ios-title3 font-bold">My Albums</h2>
+									<button className="text-ios-blue text-ios-subhead hover:opacity-70 transition-opacity">
 										See All
 									</button>
 								</div>
@@ -404,11 +398,11 @@ export default function Photos() {
 												)}
 											</div>
 											<span
-												className={`text-sm font-medium leading-tight mt-1 group-hover:text-blue-600 transition-colors ${theme.text}`}
+												className={`text-ios-subhead font-medium leading-tight mt-1 group-hover:text-ios-blue transition-colors ${theme.text}`}
 											>
 												{album.title}
 											</span>
-											<span className={`text-xs ${theme.textSecondary}`}>{album.count}</span>
+											<span className={`text-ios-caption1 ${theme.textSecondary}`}>{album.count}</span>
 										</button>
 									))}
 								</div>
@@ -416,10 +410,10 @@ export default function Photos() {
 
 							{/* People & Places */}
 							<div className="mt-8 px-4 md:px-0">
-								<h2 className="text-xl font-bold mb-3">People & Places</h2>
+								<h2 className="text-ios-title3 font-bold mb-3">People & Places</h2>
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 									<div
-										className={`aspect-square rounded-xl overflow-hidden relative ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
+										className={`aspect-square rounded-xl overflow-hidden relative ${darkMode ? 'bg-ios-dark-gray5' : 'bg-ios-gray5'}`}
 									>
 										<div className="grid grid-cols-2 grid-rows-2 w-full h-full">
 											<div className="relative">
@@ -464,7 +458,7 @@ export default function Photos() {
 										</span>
 									</div>
 									<div
-										className={`aspect-square rounded-xl overflow-hidden relative ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
+										className={`aspect-square rounded-xl overflow-hidden relative ${darkMode ? 'bg-ios-dark-gray5' : 'bg-ios-gray5'}`}
 									>
 										<Image
 											src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&h=400&fit=crop"
@@ -482,7 +476,7 @@ export default function Photos() {
 
 							{/* Media Types */}
 							<div className="mt-8 mb-8 px-4 md:px-0">
-								<h2 className="text-xl font-bold mb-3">Media Types</h2>
+								<h2 className="text-ios-title3 font-bold mb-3">Media Types</h2>
 								<div
 									className={`${theme.mediaTypeBg} rounded-xl overflow-hidden divide-y ${theme.mediaTypeBorder} transition-colors max-w-lg`}
 								>
@@ -497,12 +491,12 @@ export default function Photos() {
 											className={`flex items-center justify-between p-3 transition-colors cursor-pointer ${theme.mediaTypeHover}`}
 										>
 											<div className="flex items-center gap-3">
-												<i className={`fas fa-${item.icon} text-blue-500 w-6 text-center`}></i>
-												<span className="text-base text-blue-500">{item.label}</span>
+												<i className={`fas fa-${item.icon} text-ios-blue w-6 text-center`}></i>
+												<span className="text-ios-callout text-ios-blue">{item.label}</span>
 											</div>
 											<div className={`flex items-center gap-2 ${theme.textSecondary}`}>
-												<span className="text-sm">{item.count}</span>
-												<i className="fas fa-chevron-right text-xs"></i>
+												<span className="text-ios-subhead">{item.count}</span>
+												<i className="fas fa-chevron-right text-ios-caption1"></i>
 											</div>
 										</div>
 									))}
@@ -523,12 +517,12 @@ export default function Photos() {
 							>
 								<button
 									onClick={() => setSelectedAlbum(null)}
-									className="text-blue-500 flex items-center gap-1 text-lg hover:opacity-70 transition-opacity"
+									className="text-ios-blue flex items-center gap-1 text-ios-headline hover:opacity-70 transition-opacity"
 								>
 									<i className="fas fa-chevron-left text-xl"></i> Albums
 								</button>
-								<h1 className="text-lg font-semibold tracking-tight">{selectedAlbum}</h1>
-								<button className="text-blue-500 text-lg hover:opacity-70 transition-opacity">
+								<h1 className="text-ios-headline font-semibold tracking-tight">{selectedAlbum}</h1>
+								<button className="text-ios-blue text-ios-headline hover:opacity-70 transition-opacity">
 									Select
 								</button>
 							</div>
@@ -590,7 +584,7 @@ export default function Photos() {
 							className={`text-2xl mb-0.5 ${activeTab === 'library' ? 'fas fa-images' : 'far fa-images'}`}
 						></i>
 						<span
-							className={`text-[10px] ${activeTab === 'library' ? 'font-semibold' : 'font-medium'}`}
+							className={`text-ios-caption2 ${activeTab === 'library' ? 'font-semibold' : 'font-medium'}`}
 						>
 							Library
 						</span>
@@ -603,7 +597,7 @@ export default function Photos() {
 							className={`text-2xl mb-0.5 ${activeTab === 'foryou' ? 'fas fa-heart' : 'far fa-heart'}`}
 						></i>
 						<span
-							className={`text-[10px] ${activeTab === 'foryou' ? 'font-semibold' : 'font-medium'}`}
+							className={`text-ios-caption2 ${activeTab === 'foryou' ? 'font-semibold' : 'font-medium'}`}
 						>
 							For You
 						</span>
@@ -616,7 +610,7 @@ export default function Photos() {
 							className={`text-2xl mb-0.5 ${activeTab === 'albums' ? 'fas fa-layer-group' : 'fas fa-layer-group'}`}
 						></i>
 						<span
-							className={`text-[10px] ${activeTab === 'albums' ? 'font-semibold' : 'font-medium'}`}
+							className={`text-ios-caption2 ${activeTab === 'albums' ? 'font-semibold' : 'font-medium'}`}
 						>
 							Albums
 						</span>
@@ -629,16 +623,13 @@ export default function Photos() {
 							className={`text-2xl mb-0.5 ${activeTab === 'search' ? 'fas fa-search' : 'fas fa-search'}`}
 						></i>
 						<span
-							className={`text-[10px] ${activeTab === 'search' ? 'font-semibold' : 'font-medium'}`}
+							className={`text-ios-caption2 ${activeTab === 'search' ? 'font-semibold' : 'font-medium'}`}
 						>
 							Search
 						</span>
 					</button>
 				</div>
-				{/* Home Indicator */}
-				<div
-					className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-36 h-1.5 rounded-full z-40 pointer-events-none ${darkMode ? 'bg-white/80' : 'bg-black/80'}`}
-				></div>
+
 			</div>
 
 			{/* Fullscreen Image Viewer */}

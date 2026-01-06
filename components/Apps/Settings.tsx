@@ -6,22 +6,22 @@ import { useSettingsStore } from '../../stores/settings';
 // Theme Configuration
 const THEME = {
 	light: {
-		bg: 'bg-[#F2F2F7]',
+		bg: 'bg-ios-gray6',
 		text: 'text-black',
-		textSecondary: 'text-[#8E8E93]',
+		textSecondary: 'text-ios-gray',
 		sectionBg: 'bg-white',
-		separator: 'border-[#C6C6C8]',
-		iconBg: 'bg-[#E5E5EA]',
-		destruct: 'text-[#FF3B30]',
+		separator: 'border-ios-separator',
+		iconBg: 'bg-ios-gray5',
+		destruct: 'text-ios-red',
 	},
 	dark: {
-		bg: 'bg-[#000000]',
+		bg: 'bg-black',
 		text: 'text-white',
-		textSecondary: 'text-[#98989D]',
-		sectionBg: 'bg-[#1C1C1E]',
-		separator: 'border-[#38383A]',
-		iconBg: 'bg-[#2C2C2E]',
-		destruct: 'text-[#FF453A]',
+		textSecondary: 'text-ios-gray',
+		sectionBg: 'bg-ios-dark-gray6',
+		separator: 'border-ios-dark-separator',
+		iconBg: 'bg-ios-dark-gray5',
+		destruct: 'text-ios-red',
 	},
 };
 
@@ -40,7 +40,7 @@ const Section = ({
 		<div className="mb-8 mx-4 sm:mx-6 md:max-w-2xl md:mx-auto">
 			{title && (
 				<h2
-					className={`text-[13px] uppercase mb-2 pl-4 font-normal tracking-wide transition-colors ${theme.textSecondary}`}
+					className={`text-ios-footnote uppercase mb-2 pl-4 font-normal tracking-wide transition-colors ${theme.textSecondary}`}
 				>
 					{title}
 				</h2>
@@ -89,7 +89,7 @@ const ListItem = ({
 				<div
 					className={`w-7 h-7 rounded-[6px] flex items-center justify-center ${iconColor} text-white shadow-sm shrink-0`}
 				>
-					{icon ? icon : <i className={`${iconClass} text-[14px]`}></i>}
+					{icon ? icon : <i className={`${iconClass} text-ios-subhead`}></i>}
 				</div>
 			</div>
 
@@ -97,18 +97,18 @@ const ListItem = ({
 			<div
 				className={`flex-1 flex items-center justify-between py-2.5 pr-4 border-b ${!isLast && showSeparator ? theme.separator : 'border-transparent'} transition-colors`}
 			>
-				<span className={`text-[17px] ${theme.text} font-normal truncate pr-2 transition-colors`}>
+				<span className={`text-ios-body ${theme.text} font-normal truncate pr-2 transition-colors`}>
 					{label}
 				</span>
 
 				<div className="flex items-center gap-2">
 					{children}
 					{value && (
-						<span className={`${theme.textSecondary} text-[17px] transition-colors`}>{value}</span>
+						<span className={`${theme.textSecondary} text-ios-body transition-colors`}>{value}</span>
 					)}
 					{hasArrow && (
 						<i
-							className={`fas fa-chevron-right ${theme.textSecondary} opacity-60 text-[12px] font-bold transition-colors`}
+							className={`fas fa-chevron-right ${theme.textSecondary} opacity-60 text-ios-caption1 font-bold transition-colors`}
 						></i>
 					)}
 				</div>
@@ -127,7 +127,7 @@ const Toggle = ({
 	darkMode: boolean;
 }) => (
 	<div
-		className={`w-[51px] h-[31px] rounded-full p-[2px] cursor-pointer transition-colors duration-300 ease-in-out ${checked ? 'bg-[#34C759]' : darkMode ? 'bg-[#39393D]' : 'bg-[#E9E9EA]'}`}
+		className={`w-[51px] h-[31px] rounded-full p-[2px] cursor-pointer transition-colors duration-300 ease-in-out ${checked ? 'bg-ios-green' : darkMode ? 'bg-ios-dark-gray4' : 'bg-ios-gray5'}`}
 		onClick={e => {
 			e.stopPropagation();
 			onChange(!checked);
@@ -153,7 +153,7 @@ const WallpaperOption = ({
 	darkMode: boolean;
 }) => (
 	<button
-		className={`relative aspect-16/10 rounded-xl overflow-hidden transition-all duration-200 group ${active ? 'ring-2 ring-[#007AFF] ring-offset-2' : 'hover:scale-[1.02]'} ${darkMode ? 'ring-offset-black' : 'ring-offset-[#F2F2F7]'}`}
+		className={`relative aspect-16/10 rounded-xl overflow-hidden transition-all duration-200 group ${active ? 'ring-2 ring-ios-blue ring-offset-2' : 'hover:scale-[1.02]'} ${darkMode ? 'ring-offset-black' : 'ring-offset-ios-gray6'}`}
 		onClick={onClick}
 	>
 		{src.startsWith('/') ? (
@@ -165,14 +165,12 @@ const WallpaperOption = ({
 
 		{/* Label Overlay */}
 		<div className="absolute inset-x-0 bottom-0 p-2 bg-linear-to-t from-black/60 to-transparent">
-			<span className="text-white text-xs font-medium drop-shadow-md px-1">{label}</span>
+			<span className="text-white text-ios-caption1 font-medium drop-shadow-md px-1">{label}</span>
 		</div>
 
-		{active && (
-			<div className="absolute top-2 right-2 bg-[#007AFF] text-white rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
-				<i className="fas fa-check text-[10px]"></i>
-			</div>
-		)}
+		<div className="absolute top-2 right-2 bg-ios-blue text-white rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+			<i className="fas fa-check text-ios-caption2"></i>
+		</div>
 	</button>
 );
 
@@ -183,10 +181,10 @@ const ProfileHeader = ({ darkMode }: { darkMode: boolean }) => {
 		<div className="flex flex-col items-center pt-6 pb-8 transition-colors">
 			<div className="relative mb-3 group cursor-pointer">
 				<div
-					className={`w-20 h-20 rounded-full overflow-hidden transition-all duration-300 ${darkMode ? 'ring-2 ring-[#38383A]' : 'ring-2 ring-white shadow-sm'}`}
+					className={`w-20 h-20 rounded-full overflow-hidden transition-all duration-300 ${darkMode ? 'ring-2 ring-ios-dark-separator' : 'ring-2 ring-white shadow-sm'}`}
 				>
 					<div
-						className={`w-full h-full flex items-center justify-center bg-linear-to-b ${darkMode ? 'from-[#636366] to-[#2C2C2E]' : 'from-[#E5E5EA] to-[#C7C7CC]'}`}
+						className={`w-full h-full flex items-center justify-center bg-linear-to-b ${darkMode ? 'from-ios-dark-gray2 to-ios-dark-gray5' : 'from-ios-gray5 to-ios-gray3'}`}
 					>
 						<i
 							className={`fas fa-user text-3xl transition-colors ${darkMode ? 'text-white/80' : 'text-white'}`}
@@ -194,12 +192,12 @@ const ProfileHeader = ({ darkMode }: { darkMode: boolean }) => {
 					</div>
 				</div>
 				{/* Edit Badge */}
-				<div className="absolute bottom-0 right-0 bg-[#007AFF] w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#F2F2F7] dark:border-black">
-					<i className="fas fa-camera text-white text-[10px]"></i>
+				<div className="absolute bottom-0 right-0 bg-ios-blue w-6 h-6 rounded-full flex items-center justify-center border-2 border-ios-gray6 dark:border-black">
+					<i className="fas fa-camera text-white text-ios-caption2"></i>
 				</div>
 			</div>
-			<h1 className={`text-xl font-semibold mb-0.5 transition-colors ${theme.text}`}>User</h1>
-			<p className={`text-[14px] transition-colors ${theme.textSecondary}`}>
+			<h1 className={`text-ios-title3 font-semibold mb-0.5 transition-colors ${theme.text}`}>User</h1>
+			<p className={`text-ios-subhead transition-colors ${theme.textSecondary}`}>
 				Apple ID, iCloud, Media & Purchases
 			</p>
 		</div>
@@ -288,7 +286,7 @@ export default function Settings() {
 
 					{/* Grid Area */}
 					<div
-						className={`p-4 pt-2 grid grid-cols-2 gap-4 ${darkMode ? 'bg-[#1C1C1E]' : 'bg-white'}`}
+						className={`p-4 pt-2 grid grid-cols-2 gap-4 ${darkMode ? 'bg-ios-dark-gray6' : 'bg-white'}`}
 					>
 						{wallpapers.map((wp, i) => (
 							<WallpaperOption

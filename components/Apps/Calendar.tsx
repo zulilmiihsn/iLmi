@@ -164,8 +164,8 @@ const Month = memo(
 
 		const theme = {
 			headerBg: darkMode ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-transparent',
-			weekBorder: darkMode ? 'border-gray-900' : 'border-gray-100',
-			weekNumBg: darkMode ? 'bg-gray-900/30 border-gray-900' : 'bg-gray-50/30 border-gray-50',
+			weekBorder: darkMode ? 'border-ios-dark-separator' : 'border-ios-gray3',
+			weekNumBg: darkMode ? 'bg-ios-dark-gray5/30 border-ios-dark-separator' : 'bg-ios-gray5/30 border-ios-gray5',
 		};
 
 		return (
@@ -187,7 +187,7 @@ const Month = memo(
 							>
 								{/* Week Number */}
 								<div
-									className={`w-10 flex items-center justify-center text-[10px] text-gray-400 font-medium border-r transition-colors ${theme.weekNumBg}`}
+									className={`w-10 flex items-center justify-center text-ios-caption2 text-gray-400 font-medium border-r transition-colors ${theme.weekNumBg}`}
 								>
 									{weekNum}
 								</div>
@@ -312,10 +312,12 @@ export default function Calendar() {
 	const theme = {
 		bg: darkMode ? 'bg-black' : 'bg-white',
 		text: darkMode ? 'text-white' : 'text-black',
-		headerBg: darkMode ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200',
-		subheaderBg: darkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-gray-50/80 border-gray-200',
-		toolbarBg: darkMode ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200',
-		homeIndicator: darkMode ? 'bg-gray-500/80' : 'bg-black/80',
+		headerBg: darkMode ? 'bg-black/95 border-ios-dark-separator' : 'bg-white/95 border-ios-separator',
+		subheaderBg: darkMode ? 'bg-ios-dark-gray6/80 border-ios-dark-separator' : 'bg-ios-gray6/80 border-ios-separator',
+		weekNumBg: darkMode ? 'bg-ios-dark-gray5/30 border-ios-dark-separator' : 'bg-ios-gray5/30 border-ios-gray5',
+		weekBorder: darkMode ? 'border-ios-dark-separator' : 'border-ios-gray3',
+		toolbarBg: darkMode ? 'bg-black/95 border-ios-dark-separator' : 'bg-white/95 border-ios-separator',
+		// homeIndicator: darkMode ? 'bg-gray-500/80' : 'bg-black/80', // Handled globally
 	};
 
 	return (
@@ -328,15 +330,15 @@ export default function Calendar() {
 			>
 				<button className="flex items-center text-red-500 gap-1 active:opacity-50 transition-opacity">
 					<i className="fas fa-chevron-left text-xl"></i>
-					<span className="text-lg font-medium">{selectedDate.getFullYear()}</span>
+					<span className="text-ios-headline font-medium">{selectedDate.getFullYear()}</span>
 				</button>
 
 				<div className="flex items-center gap-5 text-red-500">
 					<button className="active:opacity-50 transition-opacity">
-						<i className="fas fa-list text-lg"></i>
+						<i className="fas fa-list text-ios-headline"></i>
 					</button>
 					<button className="active:opacity-50 transition-opacity">
-						<i className="fas fa-search text-lg"></i>
+						<i className="fas fa-search text-ios-headline"></i>
 					</button>
 					<button className="active:opacity-50 transition-opacity">
 						<i className="fas fa-plus text-xl"></i>
@@ -346,7 +348,7 @@ export default function Calendar() {
 
 			{/* Days Header */}
 			<div
-				className={`flex border-b backdrop-blur-md text-[10px] font-semibold text-gray-400 py-1.5 sticky top-[64px] z-20 will-change-transform transition-colors ${theme.subheaderBg}`}
+				className={`flex border-b backdrop-blur-md text-ios-caption2 font-semibold text-gray-400 py-1.5 sticky top-[64px] z-20 will-change-transform transition-colors ${theme.subheaderBg}`}
 			>
 				<div className="w-10"></div> {/* Spacer for week numbers */}
 				<div className="flex-1 grid grid-cols-7 text-center">
@@ -385,21 +387,18 @@ export default function Calendar() {
 			>
 				<button
 					onClick={scrollToToday}
-					className="font-medium text-base active:opacity-50 transition-opacity"
+					className="font-medium text-ios-callout active:opacity-50 transition-opacity"
 				>
 					Today
 				</button>
-				<button className="font-semibold text-base active:opacity-50 transition-opacity">
+				<button className="font-semibold text-ios-callout active:opacity-50 transition-opacity">
 					Calendars
 				</button>
-				<button className="font-medium text-base active:opacity-50 transition-opacity">
+				<button className="font-medium text-ios-callout active:opacity-50 transition-opacity">
 					Inbox
 				</button>
 
-				{/* Home Indicator */}
-				<div
-					className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-36 h-1.5 rounded-full z-40 pointer-events-none transition-colors ${theme.homeIndicator}`}
-				></div>
+
 			</div>
 		</div>
 	);

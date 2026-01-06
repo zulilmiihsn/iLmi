@@ -11,10 +11,10 @@ interface TabBarProps {
 export default function TabBar({ activeTab, onTabChange, darkMode }: TabBarProps) {
     // Reconstruct theme for tab bar specifically
     const theme = useMemo(() => ({
-        tabBarBg: darkMode ? 'bg-[#1C1C1E]/90 backdrop-blur-md border-[#38383A]' : 'bg-[#F9F9F9]/90 backdrop-blur-md border-[#B2B2B2]',
-        tabHighlight: darkMode ? 'bg-[#007AFF]/20' : 'bg-[#007AFF]/10',
-        activeTab: 'text-[#007AFF]',
-        inactiveTab: darkMode ? 'text-[#8E8E93]' : 'text-[#8E8E93]',
+        tabBarBg: darkMode ? 'bg-ios-dark-gray6/90 backdrop-blur-md border-ios-dark-separator' : 'bg-ios-gray6/90 backdrop-blur-md border-ios-separator',
+        tabHighlight: darkMode ? 'bg-ios-blue/20' : 'bg-ios-blue/10',
+        activeTab: 'text-ios-blue',
+        inactiveTab: darkMode ? 'text-ios-gray' : 'text-ios-gray',
     }), [darkMode]);
 
     return (

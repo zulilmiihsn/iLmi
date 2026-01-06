@@ -346,7 +346,7 @@ export default function Camera() {
                         onClick={() => setHdrEnabled(!hdrEnabled)}
                         className="w-11 h-11 rounded-full flex items-center justify-center active:bg-white/10 transition-all"
                     >
-                        <span className={`text-xs font-bold tracking-wider ${hdrEnabled ? 'text-yellow-400' : 'text-white'}`}>HDR</span>
+                        <span className={`text-ios-caption1 font-bold tracking-wider ${hdrEnabled ? 'text-ios-yellow' : 'text-white'}`}>HDR</span>
                     </button>
 
                     {/* Rotate Camera */}
@@ -362,9 +362,9 @@ export default function Camera() {
                         onClick={toggleTimer}
                         className="w-11 h-11 rounded-full flex items-center justify-center active:bg-white/10 transition-all relative"
                     >
-                        <i className={`fas fa-clock text-lg ${timerSeconds > 0 ? 'text-yellow-400' : 'text-white'}`}></i>
+                        <i className={`fas fa-clock text-lg ${timerSeconds > 0 ? 'text-ios-yellow' : 'text-white'}`}></i>
                         {timerSeconds > 0 && (
-                            <span className="absolute -bottom-1 text-[9px] font-bold text-yellow-400">{timerSeconds}s</span>
+                            <span className="absolute -bottom-1 text-[9px] font-bold text-ios-yellow">{timerSeconds}s</span>
                         )}
                     </button>
 
@@ -373,7 +373,7 @@ export default function Camera() {
                         onClick={toggleFilter}
                         className="w-11 h-11 rounded-full flex items-center justify-center active:bg-white/10 transition-all"
                     >
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${currentFilter !== 'none' ? 'bg-yellow-400' : 'bg-yellow-400'
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${currentFilter !== 'none' ? 'bg-ios-yellow' : 'bg-ios-yellow'
                             }`}>
                             <span className="text-[10px] font-bold text-black">f</span>
                         </div>
@@ -395,7 +395,7 @@ export default function Camera() {
 
             {/* Recording Indicator */}
             {isRecording && (
-                <div className="absolute top-20 left-5 z-30 flex items-center gap-2 bg-red-600 px-3 py-1.5 rounded-full">
+                <div className="absolute top-20 left-5 z-30 flex items-center gap-2 bg-ios-red px-3 py-1.5 rounded-full">
                     <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                     <span className="text-xs font-semibold">REC</span>
                 </div>
@@ -441,7 +441,7 @@ export default function Camera() {
                         <button
                             key={m}
                             onClick={() => setMode(m)}
-                            className={`text-xs tracking-wider transition-all ${mode === m ? 'text-yellow-400 font-semibold' : 'text-white/60'
+                            className={`text-ios-caption1 tracking-wider transition-all ${mode === m ? 'text-ios-yellow font-semibold' : 'text-white/60'
                                 }`}
                             aria-label={`Switch to ${m} mode`}
                             role="tab"
@@ -478,15 +478,15 @@ export default function Camera() {
                     {/* Shutter Button */}
                     <button
                         onClick={handleShutterClick}
-                        className={`w-[70px] h-[70px] rounded-full flex items-center justify-center active:scale-95 transition-all ${isRecording ? 'bg-red-600/30' : 'bg-white/30'
+                        className={`w-[70px] h-[70px] rounded-full flex items-center justify-center active:scale-95 transition-all ${isRecording ? 'bg-ios-red/30' : 'bg-white/30'
                             }`}
                         aria-label={mode === 'VIDEO' || mode === 'SLO-MO' ? (isRecording ? "Stop recording" : "Start recording") : "Take photo"}
                     >
                         {mode === 'VIDEO' || mode === 'SLO-MO' ? (
                             isRecording ? (
-                                <div className="w-[30px] h-[30px] bg-red-600 rounded-sm"></div>
+                                <div className="w-[30px] h-[30px] bg-ios-red rounded-sm"></div>
                             ) : (
-                                <div className="w-[60px] h-[60px] rounded-full bg-red-600"></div>
+                                <div className="w-[60px] h-[60px] rounded-full bg-ios-red"></div>
                             )
                         ) : (
                             <div className="w-[60px] h-[60px] rounded-full bg-white"></div>

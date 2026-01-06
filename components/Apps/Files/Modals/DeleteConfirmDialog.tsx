@@ -16,9 +16,9 @@ export default function DeleteConfirmDialog({
     if (!isOpen) return null;
 
     const theme = {
-        modalBg: darkMode ? 'bg-[#1C1C1E]/80' : 'bg-[#F9F9F9]/80',
+        modalBg: darkMode ? 'bg-ios-dark-gray6/80' : 'bg-ios-gray6/80',
         text: darkMode ? 'text-white' : 'text-black',
-        textSecondary: darkMode ? 'text-[#8E8E93]' : 'text-[#8E8E93]',
+        textSecondary: darkMode ? 'text-ios-gray' : 'text-ios-gray',
     };
 
     return (
@@ -30,17 +30,17 @@ export default function DeleteConfirmDialog({
                     <h3 className={`text-lg font-semibold mb-1 ${theme.text}`}>Delete Item?</h3>
                     <p className={`text-sm mb-4 ${theme.textSecondary}`}>This action cannot be undone.</p>
                 </div>
-                <div className={`flex border-t ${darkMode ? 'border-gray-700' : 'border-gray-300/50'}`}>
+                <div className={`flex border-t ${darkMode ? 'border-ios-dark-separator' : 'border-ios-gray4/50'}`}>
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3 text-blue-500 font-medium active:bg-gray-100/10 transition-colors"
+                        className="flex-1 py-3 text-ios-blue font-medium active:bg-ios-gray6/10 transition-colors"
                     >
                         Cancel
                     </button>
-                    <div className={`w-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                    <div className={`w-px ${darkMode ? 'bg-ios-dark-separator' : 'bg-ios-gray4'}`} />
                     <button
                         onClick={onConfirm}
-                        className="flex-1 py-3 text-red-500 font-semibold active:bg-red-500/10 transition-colors"
+                        className="flex-1 py-3 text-ios-red font-semibold active:bg-ios-red/10 transition-colors"
                     >
                         Delete
                     </button>

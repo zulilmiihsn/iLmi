@@ -11,7 +11,7 @@ export default function Maps() {
 
 	return (
 		<div
-			className={`w-full h-full relative overflow-hidden font-sans select-none will-change-transform transform-gpu backface-hidden ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}
+			className={`w-full h-full relative overflow-hidden font-sans select-none will-change-transform transform-gpu backface-hidden ${darkMode ? 'bg-ios-dark-gray6 text-white' : 'bg-ios-gray6 text-black'}`}
 		>
 			{/* Map Background */}
 			<div className="absolute inset-0 z-0">
@@ -39,7 +39,7 @@ export default function Maps() {
 			<div className="absolute top-14 right-4 z-10 flex flex-col gap-3">
 				{/* Map Settings / Info */}
 				<button
-					className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-gray-800/80 border-white/10' : 'bg-white/80 border-gray-200'}`}
+					className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-ios-dark-gray5/80 border-white/10' : 'bg-white/80 border-ios-separator'}`}
 				>
 					<svg
 						width="20"
@@ -50,7 +50,7 @@ export default function Maps() {
 						strokeWidth="2"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						className="text-blue-500"
+						className="text-ios-blue"
 					>
 						<circle cx="12" cy="12" r="10" />
 						<path d="M12 16v-4" />
@@ -61,7 +61,7 @@ export default function Maps() {
 				{/* 3D/2D Toggle */}
 				<button
 					onClick={() => setViewMode(viewMode === '3D' ? '2D' : '3D')}
-					className={`w-11 h-11 backdrop-blur-md rounded-lg flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-gray-800/80 border-white/10' : 'bg-white/80 border-gray-200'}`}
+					className={`w-11 h-11 backdrop-blur-md rounded-lg flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-ios-dark-gray5/80 border-white/10' : 'bg-white/80 border-ios-separator'}`}
 				>
 					<span
 						className={`font-bold text-sm tracking-tighter ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}
@@ -72,7 +72,7 @@ export default function Maps() {
 
 				{/* Compass */}
 				<button
-					className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-gray-800/80 border-white/10' : 'bg-white/80 border-gray-200'}`}
+					className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-ios-dark-gray5/80 border-white/10' : 'bg-white/80 border-ios-separator'}`}
 				>
 					<svg
 						width="20"
@@ -110,7 +110,7 @@ export default function Maps() {
 					className={`absolute -top-16 right-4 transition-opacity duration-200 ${searchFocused ? 'opacity-0' : 'opacity-100'}`}
 				>
 					<button
-						className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-gray-800/80 border-white/10' : 'bg-white/80 border-gray-200'}`}
+						className={`w-11 h-11 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border ${darkMode ? 'bg-ios-dark-gray5/80 border-white/10' : 'bg-white/80 border-ios-separator'}`}
 					>
 						<svg
 							width="20"
@@ -121,7 +121,7 @@ export default function Maps() {
 							strokeWidth="2"
 							strokeLinecap="round"
 							strokeLinejoin="round"
-							className="text-blue-500"
+							className="text-ios-blue"
 						>
 							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
 							<circle cx="12" cy="10" r="3" />
@@ -134,14 +134,14 @@ export default function Maps() {
 					className={`absolute -top-20 left-4 flex flex-col items-start transition-opacity duration-200 ${searchFocused ? 'opacity-0' : 'opacity-100'}`}
 				>
 					<div
-						className={`backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 mb-1 border shadow-sm ${darkMode ? 'bg-gray-800/60 border-white/5' : 'bg-white/60 border-gray-200/50'}`}
+						className={`backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 mb-1 border shadow-sm ${darkMode ? 'bg-gray-800/60 border-white/5' : 'bg-white/60 border-ios-separator/50'}`}
 					>
 						<span
 							className={`text-xs font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}
 						>
 							68°
 						</span>
-						<span className="w-1 h-1 rounded-full bg-green-500"></span>
+						<span className="w-1 h-1 rounded-full bg-ios-green"></span>
 						<span className={`text-[10px] ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
 							AQI 22
 						</span>
@@ -150,7 +150,7 @@ export default function Maps() {
 
 				{/* Main Bottom Sheet */}
 				<div
-					className={`backdrop-blur-xl w-full rounded-t-[20px] pb-8 pt-5 px-4 shadow-2xl border-t min-h-[300px] transition-colors duration-300 ${darkMode ? 'bg-gray-900/90 border-white/10' : 'bg-white/90 border-gray-200/50'}`}
+					className={`backdrop-blur-xl w-full rounded-t-[20px] pb-8 pt-5 px-4 shadow-2xl border-t min-h-[300px] transition-colors duration-300 ${darkMode ? 'bg-ios-dark-gray6/90 border-white/10' : 'bg-white/90 border-ios-separator/50'}`}
 				>
 					{/* Drag Handle */}
 					<div className="w-10 h-1 bg-gray-500/50 rounded-full mx-auto mb-1 absolute top-2 left-1/2 -translate-x-1/2"></div>
@@ -174,7 +174,7 @@ export default function Maps() {
 						</div>
 						<input
 							type="text"
-							className={`block w-full pl-10 pr-10 py-3 border-none rounded-xl leading-5 placeholder-gray-400 focus:outline-none focus:ring-0 transition-colors sm:text-sm shadow-inner ${darkMode ? 'bg-[#2c2c2e] text-gray-100 focus:bg-[#3a3a3c]' : 'bg-gray-100 text-gray-900 focus:bg-gray-200'}`}
+							className={`block w-full pl-10 pr-10 py-3 border-none rounded-xl leading-5 placeholder-gray-400 focus:outline-none focus:ring-0 transition-colors sm:text-sm shadow-inner ${darkMode ? 'bg-ios-dark-gray5 text-gray-100 focus:bg-[#3a3a3c]' : 'bg-ios-gray6 text-gray-900 focus:bg-gray-200'}`}
 							placeholder="Search Maps"
 							onFocus={() => setSearchFocused(true)}
 							onBlur={() => setSearchFocused(false)}
@@ -210,7 +210,7 @@ export default function Maps() {
 						<div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
 							{/* Card 1 */}
 							<div
-								className={`shrink-0 w-64 h-40 rounded-xl overflow-hidden shadow-lg border relative ${darkMode ? 'bg-[#2c2c2e] border-white/5' : 'bg-white border-gray-200'}`}
+								className={`shrink-0 w-64 h-40 rounded-xl overflow-hidden shadow-lg border relative ${darkMode ? 'bg-ios-dark-gray5 border-white/5' : 'bg-white border-ios-separator'}`}
 							>
 								<div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent z-10"></div>
 								{/* Placeholder image for place */}
@@ -220,7 +220,7 @@ export default function Maps() {
 									<div className="text-xs text-gray-300">Sports Complex · 0.1 mi</div>
 								</div>
 								<div className="absolute top-3 right-3 z-20 rounded-full bg-black/50 p-1">
-									<div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-[10px] font-bold">
+									<div className="w-6 h-6 rounded-full bg-ios-green flex items-center justify-center text-[10px] font-bold">
 										4.7
 									</div>
 								</div>
@@ -228,7 +228,7 @@ export default function Maps() {
 
 							{/* Card 2 */}
 							<div
-								className={`shrink-0 w-64 h-40 rounded-xl overflow-hidden shadow-lg border relative ${darkMode ? 'bg-[#2c2c2e] border-white/5' : 'bg-white border-gray-200'}`}
+								className={`shrink-0 w-64 h-40 rounded-xl overflow-hidden shadow-lg border relative ${darkMode ? 'bg-ios-dark-gray5 border-white/5' : 'bg-white border-ios-separator'}`}
 							>
 								<div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent z-10"></div>
 								<div className="w-full h-full bg-gray-700" />
@@ -248,9 +248,9 @@ export default function Maps() {
 							</h3>
 							<div className="flex gap-6">
 								<div className="flex flex-col items-center gap-1">
-									<div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+									<div className="w-14 h-14 rounded-full bg-ios-blue/20 flex items-center justify-center border border-ios-blue/30">
 										<svg
-											className="w-6 h-6 text-blue-400"
+											className="w-6 h-6 text-ios-blue"
 											fill="none"
 											viewBox="0 0 24 24"
 											stroke="currentColor"

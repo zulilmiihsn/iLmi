@@ -129,13 +129,13 @@ function Calculator() {
 
 	// Theme Colors
 	const theme = {
-		bg: darkMode ? 'bg-black' : 'bg-[#F2F2F7]',
+		bg: darkMode ? 'bg-black' : 'bg-ios-gray6',
 		text: darkMode ? 'text-white' : 'text-black',
 		historyText: darkMode ? 'text-gray-400' : 'text-gray-500',
-		btnFunction: darkMode ? 'bg-[#333] text-white' : 'bg-[#D1D1D6] text-black',
-		btnNumber: darkMode ? 'bg-[#333] text-white' : 'bg-white text-black',
-		btnOperator: 'bg-[#FF9500] text-white',
-		btnOperatorActive: 'bg-white text-[#FF9500]',
+		btnFunction: darkMode ? 'bg-ios-dark-gray4 text-white' : 'bg-ios-gray4 text-black',
+		btnNumber: darkMode ? 'bg-ios-dark-gray5 text-white' : 'bg-white text-black',
+		btnOperator: 'bg-ios-orange text-white',
+		btnOperatorActive: 'bg-white text-ios-orange',
 	};
 
 	return (
@@ -194,9 +194,8 @@ function Calculator() {
 					%
 				</button>
 				<button
-					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${
-						operation === '/' ? theme.btnOperatorActive : theme.btnOperator
-					}`}
+					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${operation === '/' ? theme.btnOperatorActive : theme.btnOperator
+						}`}
 					onClick={() => inputOperation('/')}
 				>
 					÷
@@ -222,9 +221,8 @@ function Calculator() {
 					9
 				</button>
 				<button
-					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${
-						operation === '*' ? theme.btnOperatorActive : theme.btnOperator
-					}`}
+					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${operation === '*' ? theme.btnOperatorActive : theme.btnOperator
+						}`}
 					onClick={() => inputOperation('*')}
 				>
 					×
@@ -250,9 +248,8 @@ function Calculator() {
 					6
 				</button>
 				<button
-					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${
-						operation === '-' ? theme.btnOperatorActive : theme.btnOperator
-					}`}
+					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${operation === '-' ? theme.btnOperatorActive : theme.btnOperator
+						}`}
 					onClick={() => inputOperation('-')}
 				>
 					−
@@ -278,9 +275,8 @@ function Calculator() {
 					3
 				</button>
 				<button
-					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${
-						operation === '+' ? theme.btnOperatorActive : theme.btnOperator
-					}`}
+					className={`calc-button aspect-square rounded-full text-4xl font-semibold active:opacity-70 transition-opacity ${operation === '+' ? theme.btnOperatorActive : theme.btnOperator
+						}`}
 					onClick={() => inputOperation('+')}
 				>
 					+
